@@ -1,0 +1,1942 @@
+<!doctype html><html lang=ar dir=rtl><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'></head><body><title>OvaSense AI</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>/* OvaSense — واجهة داكنة تقنية: زجاج، تدرجات سيان/إنديغو، أرقام أحادية العرض */
+:root{--bg:#f3f6fb;--bg2:#e8eef8;--card:rgba(255,255,255,.86);--card-s:#fff;--ink:#0f172a;--mut:#56627a;--line:rgba(15,23,42,.1);--pri:#0a8f9b;--pri-d:#076c76;--acc:#d63f86;--ok:#14935a;--warn:#b86e00;--danger:#d02f3d;--band:rgba(10,143,155,.13);--info:#3b5bdb;--glow:0 10px 30px rgba(10,143,155,.18);--g1:#0fb5c4;--g2:#5b6cff;--inp:#eef2f9}
+@media (prefers-color-scheme:dark){:root{--bg:#070b14;--bg2:#0d1424;--card:rgba(20,29,48,.72);--card-s:#121b2e;--ink:#e8eefc;--mut:#8b9ab8;--line:rgba(148,170,220,.16);--pri:#2dd4c8;--pri-d:#7ee8df;--acc:#ff6fa5;--ok:#43d492;--warn:#ffbf5e;--danger:#ff6b7a;--band:rgba(45,212,200,.14);--info:#8ea2ff;--glow:0 10px 34px rgba(45,212,200,.16);--g1:#2dd4c8;--g2:#6a7bff;--inp:rgba(8,13,24,.7)}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--ink);font:15px/1.7 "IBM Plex Sans Arabic","Tajawal","Segoe UI",Tahoma,system-ui,sans-serif;background:radial-gradient(900px 500px at 85% -10%,color-mix(in srgb,var(--g2) 22%,transparent),transparent 60%),radial-gradient(800px 500px at 5% 0%,color-mix(in srgb,var(--g1) 18%,transparent),transparent 60%),var(--bg);background-attachment:fixed;padding-bottom:84px}
+button,input,select,textarea{font:inherit;color:inherit}
+.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px max(16px,env(safe-area-inset-left,0px)) 12px max(16px,env(safe-area-inset-right,0px));background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.brand{display:flex;gap:12px;align-items:center}.brand b{font-size:18px;display:block;line-height:1.2;letter-spacing:.2px}.brand small{color:var(--mut);font-size:12px}
+.logo{width:38px;height:38px;border-radius:12px;background:conic-gradient(from 210deg,var(--g1),var(--g2),var(--acc),var(--g1));position:relative;box-shadow:var(--glow)}
+.logo::after{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--bg)}
+.clockbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px}
+.clockbar .t{font-variant-numeric:tabular-nums;font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;background:var(--card);padding:3px 11px;border-radius:999px;border:1px solid var(--line);font-size:12px}
+.banner{background:color-mix(in srgb,var(--warn) 12%,transparent);color:var(--warn);padding:7px max(16px,env(safe-area-inset-left,0px));font-size:12.5px;border-bottom:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
+.nav{display:flex;gap:6px;overflow-x:auto;padding:10px max(12px,env(safe-area-inset-left,0px));scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav button{flex:0 0 auto;display:flex;align-items:center;gap:7px;border:1px solid transparent;background:transparent;padding:8px 14px;border-radius:12px;cursor:pointer;color:var(--mut);white-space:nowrap;transition:.18s}
+.nav button:hover{color:var(--ink);background:var(--card)}
+.nav button[aria-current=page]{color:#04121a;background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:var(--glow);font-weight:600}
+.nav svg{flex:0 0 auto}
+main{max-width:1120px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-left,0px));animation:rise .35s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{margin:6px 0 14px;font-size:22px;letter-spacing:.2px}h3{margin:0 0 10px;font-size:16px;color:var(--ink)}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 12px 32px rgba(0,0,0,.12)}
+.tile{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.tile::before{content:"";position:absolute;inset-inline-end:-30px;top:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--g1) 30%,transparent),transparent 70%)}
+.tile small{color:var(--mut);display:block;font-size:12.5px}
+.tile .v{font-size:28px;font-weight:700;line-height:1.3;font-variant-numeric:tabular-nums;font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;background:linear-gradient(135deg,var(--ink),var(--pri-d));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tile .s{font-size:12px;color:var(--mut)}
+.btn{border:0;background:linear-gradient(135deg,var(--g1),var(--g2));color:#04121a;font-weight:600;padding:9px 16px;border-radius:12px;cursor:pointer;box-shadow:var(--glow);transition:transform .15s,filter .15s}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.08)}.btn:active{transform:none}
+.btn.sec{background:transparent;color:var(--pri-d);border:1px solid var(--line);box-shadow:none;font-weight:500}.btn.sec:hover{border-color:var(--pri)}
+.btn.dng{background:linear-gradient(135deg,#ff6b7a,#d02f3d);color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.sm{padding:4px 12px;font-size:13px;border-radius:10px}
+.btn:focus-visible,.nav button:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)}
+input,select,textarea{background:var(--inp);border:1px solid var(--line);border-radius:12px;padding:8px 11px;min-width:0;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--pri)}
+input[type=range]{padding:0;accent-color:var(--pri)}
+.pill{display:inline-block;padding:2px 11px;border-radius:999px;font-size:12px;border:1px solid var(--line);background:color-mix(in srgb,var(--mut) 10%,transparent)}
+.pill.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.pill.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent);background:color-mix(in srgb,var(--warn) 12%,transparent)}
+.pill.danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,transparent);background:color-mix(in srgb,var(--danger) 12%,transparent)}
+.pill.info{color:var(--info);border-color:color-mix(in srgb,var(--info) 45%,transparent);background:color-mix(in srgb,var(--info) 12%,transparent)}
+.alert{padding:10px 14px;border-radius:14px;border:1px solid var(--line);border-inline-start-width:4px;margin:8px 0;background:var(--card)}
+.alert.warn{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 9%,transparent)}.alert.danger{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 10%,transparent)}.alert.info{border-color:var(--info);background:color-mix(in srgb,var(--info) 9%,transparent)}.alert.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 9%,transparent)}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}th{color:var(--mut);font-weight:600;font-size:12.5px;letter-spacing:.3px}tbody tr:hover td{background:color-mix(in srgb,var(--pri) 6%,transparent)}
+.scroll{overflow-x:auto}
+.chart{width:100%;height:auto;display:block}.chart text{fill:var(--mut);font-size:11px;font-family:"IBM Plex Mono",ui-monospace,monospace}
+.chart .gridl{stroke:var(--line);stroke-width:1}.chart .band{fill:var(--band)}.chart .rng{fill:color-mix(in srgb,var(--ok) 9%,transparent)}
+.chart .l1{stroke:var(--pri);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 6px color-mix(in srgb,var(--pri) 55%,transparent))}
+.chart .l2{stroke:var(--acc);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}.chart .l3{stroke:var(--mut);fill:none;stroke-width:1.5;stroke-dasharray:5 4}.chart .l4{stroke:var(--info);fill:none;stroke-width:1.5;stroke-dasharray:2 4}
+.chart .d1{fill:var(--acc)}.chart .d2{fill:var(--warn)}.chart .d3{fill:var(--ok)}
+.msgs{display:flex;flex-direction:column;gap:10px;max-height:52vh;overflow:auto;padding:6px;scrollbar-width:thin}
+.msg{max-width:88%;padding:10px 14px;border-radius:18px;white-space:pre-wrap}
+.msg.u{align-self:flex-start;background:linear-gradient(135deg,var(--g1),var(--g2));color:#04121a;border-end-end-radius:6px}
+.msg.b{align-self:flex-end;background:var(--card-s);border:1px solid var(--line);border-end-start-radius:6px}
+.msg.b.warn{border-color:var(--warn)}.msg.b.danger{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 10%,var(--card-s))}
+.msg small{display:block;color:var(--mut);margin-top:4px;font-size:11px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 13px;cursor:pointer;font-size:13px;transition:.15s}.chip:hover{border-color:var(--pri);color:var(--pri-d)}
+.bar{height:10px;border-radius:99px;background:color-mix(in srgb,var(--mut) 20%,transparent);overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--g1),var(--g2));border-radius:99px}
+.tour{position:fixed;bottom:calc(86px + env(safe-area-inset-bottom,0px));inset-inline:12px;max-width:520px;margin-inline:auto;background:var(--card-s);border:1px solid var(--pri);border-radius:18px;padding:14px;box-shadow:0 18px 50px rgba(0,0,0,.35),var(--glow);z-index:30}
+.mut{color:var(--mut)}.small{font-size:12px}.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;direction:ltr;unicode-bidi:embed;font-size:12px}
+.ltr{direction:ltr;unicode-bidi:embed}
+a{color:var(--pri-d)}
+.ref{padding:8px 0;border-bottom:1px solid var(--line)}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+@media (max-width:760px){
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .nav{position:fixed;bottom:0;inset-inline:0;z-index:25;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));gap:2px;background:color-mix(in srgb,var(--bg2) 82%,transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-top:1px solid var(--line)}
+  .nav button{flex-direction:column;gap:2px;padding:6px 10px;font-size:11px;min-width:62px;border-radius:12px}
+  .nav button[aria-current=page]{box-shadow:none}
+  main{padding:12px 14px}.tile .v{font-size:23px}h2{font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){main{animation:none}*{transition:none!important}}
+@media print{.nav,.clockbar,.tour{display:none}}
+.cal{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:5px}
+.cd{display:flex;align-items:center;justify-content:center;height:34px;border-radius:10px;border:1px solid var(--line);font-size:12px;font-family:"IBM Plex Mono",ui-monospace,monospace;color:var(--mut);background:var(--card)}
+.cd.bl{background:color-mix(in srgb,var(--danger) 22%,transparent);color:var(--ink)}
+.cd.fr{background:color-mix(in srgb,var(--ok) 24%,transparent);color:var(--ink);border-color:var(--ok)}
+.cd.ov{background:linear-gradient(135deg,var(--g1),var(--g2));color:#04121a;font-weight:700;border-color:transparent}
+.cd.np{border-style:dashed;border-color:var(--acc)}
+.cd.td{outline:2px solid var(--pri);outline-offset:1px;color:var(--ink);font-weight:700}
+.lg{display:inline-block;width:11px;height:11px;border-radius:4px;vertical-align:-1px;border:1px solid var(--line)}
+.lg.bl{background:color-mix(in srgb,var(--danger) 35%,transparent)}.lg.fr{background:color-mix(in srgb,var(--ok) 35%,transparent)}.lg.ov{background:var(--g1)}.lg.np{border:1px dashed var(--acc)}.lg.td{outline:2px solid var(--pri)}
+.welcome{max-width:560px;margin:24px auto;display:flex;flex-direction:column;gap:12px}
+textarea{font:inherit;color:inherit;background:var(--inp);border:1px solid var(--line);border-radius:10px;padding:8px}
+</style>
+<header class="top">
+  <div class="brand"><span class="logo" aria-hidden="true"></span><div><b>OvaSense AI</b><small>نموذج تطبيق أولي · MED-PCKPZB</small></div></div>
+  <div id="clockbar" class="clockbar"></div>
+</header>
+<div class="banner" role="note">محاكاة تعليمية ببيانات تركيبية — ليست أداة طبية ولا تُستخدم لاتخاذ قرارات علاجية. الجهاز لا يشخّص؛ يدعم إدارة الحالة بعد تشخيص الطبيب.</div>
+<nav id="nav" class="nav" aria-label="التنقل"></nav>
+<main id="view" tabindex="-1"></main>
+<div id="tour" class="tour" hidden></div>
+<script>document.documentElement.lang="ar";document.documentElement.dir="rtl";</script>
+<script>/* OvaUtil — أدوات مساعدة عامة (توقيت السعودية UTC+3 ثابت) */
+(function (g) {
+  'use strict';
+  const U = {};
+  U.MIN = 60000; U.HOUR = 3600000; U.DAY = 86400000; U.TZ = 3 * 3600000;
+  const pad = n => String(n).padStart(2, '0');
+  U.clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+  U.mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : NaN;
+  U.sd = a => {
+    if (a.length < 2) return NaN;
+    const m = U.mean(a);
+    return Math.sqrt(a.reduce((s, x) => s + (x - m) * (x - m), 0) / (a.length - 1));
+  };
+  U.round = (x, d = 0) => { const p = Math.pow(10, d); return Math.round(x * p) / p; };
+  U.dayKey = t => new Date(t + U.TZ).toISOString().slice(0, 10);
+  U.dayStart = t => Math.floor((t + U.TZ) / U.DAY) * U.DAY - U.TZ;
+  U.dayKeyToT = k => Date.parse(k + 'T00:00:00Z') - U.TZ;
+  U.hour = t => { const d = new Date(t + U.TZ); return d.getUTCHours() + d.getUTCMinutes() / 60; };
+  U.hhmm = t => { const d = new Date(t + U.TZ); return pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()); };
+  U.fmtDT = t => U.dayKey(t) + ' ' + U.hhmm(t);
+  U.parseHM = s => { const p = String(s).split(':').map(Number); return ((p[0] || 0) * 60 + (p[1] || 0)) * U.MIN; };
+
+  U.rng = seed => {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6D2B79F5) >>> 0;
+      let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  };
+  U.gauss = r => { let u = 0; while (!u) u = r(); const v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+
+  function ranks(a) {
+    const idx = a.map((v, i) => [v, i]).sort((x, y) => x[0] - y[0]);
+    const r = new Array(a.length);
+    for (let i = 0; i < idx.length;) {
+      let j = i;
+      while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++;
+      const avg = (i + j) / 2 + 1;
+      for (let k = i; k <= j; k++) r[idx[k][1]] = avg;
+      i = j + 1;
+    }
+    return r;
+  }
+  U.spearman = (x, y) => {
+    if (x.length !== y.length || x.length < 3) return NaN;
+    const rx = ranks(x), ry = ranks(y), mx = U.mean(rx), my = U.mean(ry);
+    let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < rx.length; i++) { sxy += (rx[i] - mx) * (ry[i] - my); sxx += (rx[i] - mx) ** 2; syy += (ry[i] - my) ** 2; }
+    if (sxx === 0 || syy === 0) return NaN;
+    return sxy / Math.sqrt(sxx * syy);
+  };
+
+  U.normAr = s => String(s == null ? '' : s).toLowerCase()
+    .replace(/[ً-ْـ]/g, '')
+    .replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه')
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+    .replace(/[؟?!.,،؛:]/g, ' ').replace(/\s+/g, ' ').trim();
+  U.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  U.uid = (r) => { const f = r || Math.random; return Array.from({ length: 8 }, () => Math.floor(f() * 16).toString(16)).join(''); };
+
+  g.OvaUtil = U;
+  if (typeof module !== 'undefined' && module.exports) module.exports = U;
+})(globalThis);
+</script>
+<script>/* OvaCrypto — SHA-256 (JS صرف، متزامن) + ECDSA P-256 عبر WebCrypto */
+(function (g) {
+  'use strict';
+  const K = [], H0 = [];
+  (function () {
+    const primes = [];
+    for (let n = 2; primes.length < 64; n++) {
+      let ok = true;
+      for (const p of primes) { if (p * p > n) break; if (n % p === 0) { ok = false; break; } }
+      if (ok) primes.push(n);
+    }
+    const frac = x => x - Math.floor(x);
+    for (let i = 0; i < 64; i++) K.push(Math.floor(frac(Math.cbrt(primes[i])) * 4294967296) >>> 0);
+    for (let i = 0; i < 8; i++) H0.push(Math.floor(frac(Math.sqrt(primes[i])) * 4294967296) >>> 0);
+  })();
+
+  const C = {};
+  C.utf8 = s => new TextEncoder().encode(s);
+  C.hex = b => Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
+
+  C.sha256 = function (bytes) {
+    const l = bytes.length;
+    const total = ((l + 9 + 63) >> 6) << 6;
+    const buf = new Uint8Array(total);
+    buf.set(bytes); buf[l] = 0x80;
+    const dv = new DataView(buf.buffer);
+    dv.setUint32(total - 8, Math.floor(l / 0x20000000));
+    dv.setUint32(total - 4, (l << 3) >>> 0);
+    const h = H0.slice(), w = new Uint32Array(64);
+    for (let o = 0; o < total; o += 64) {
+      for (let i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+      for (let i = 16; i < 64; i++) {
+        const a = w[i - 15], b = w[i - 2];
+        const s0 = ((a >>> 7) | (a << 25)) ^ ((a >>> 18) | (a << 14)) ^ (a >>> 3);
+        const s1 = ((b >>> 17) | (b << 15)) ^ ((b >>> 19) | (b << 13)) ^ (b >>> 10);
+        w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0;
+      }
+      let a = h[0], b = h[1], c = h[2], d = h[3], e = h[4], f = h[5], gg = h[6], hh = h[7];
+      for (let i = 0; i < 64; i++) {
+        const S1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+        const ch = (e & f) ^ (~e & gg);
+        const t1 = (hh + S1 + ch + K[i] + w[i]) >>> 0;
+        const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+        const maj = (a & b) ^ (a & c) ^ (b & c);
+        const t2 = (S0 + maj) >>> 0;
+        hh = gg; gg = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+      }
+      h[0] = (h[0] + a) >>> 0; h[1] = (h[1] + b) >>> 0; h[2] = (h[2] + c) >>> 0; h[3] = (h[3] + d) >>> 0;
+      h[4] = (h[4] + e) >>> 0; h[5] = (h[5] + f) >>> 0; h[6] = (h[6] + gg) >>> 0; h[7] = (h[7] + hh) >>> 0;
+    }
+    const out = new Uint8Array(32), odv = new DataView(out.buffer);
+    for (let i = 0; i < 8; i++) odv.setUint32(i * 4, h[i]);
+    return out;
+  };
+  C.sha256Hex = s => C.hex(C.sha256(C.utf8(s)));
+
+  // JSON قياسي بترتيب مفاتيح ثابت
+  C.canonical = function canon(v) {
+    if (v === null || typeof v !== 'object') return JSON.stringify(v === undefined ? null : v);
+    if (Array.isArray(v)) return '[' + v.map(canon).join(',') + ']';
+    return '{' + Object.keys(v).sort().filter(k => v[k] !== undefined).map(k => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}';
+  };
+
+  const subtle = () => (g.crypto && g.crypto.subtle) || null;
+  C.available = () => !!subtle();
+  const ALG = { name: 'ECDSA', namedCurve: 'P-256' };
+  const b64u = bytes => btoa(String.fromCharCode.apply(null, Array.from(bytes))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const unb64u = s => { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), c => c.charCodeAt(0)); };
+
+  C.generateKeyPair = async function () {
+    const kp = await subtle().generateKey(ALG, true, ['sign', 'verify']);
+    const pub = await subtle().exportKey('jwk', kp.publicKey);
+    const priv = await subtle().exportKey('jwk', kp.privateKey);
+    return { publicJwk: pub, privateJwk: priv, keyId: C.keyIdOf(pub) };
+  };
+  C.keyIdOf = jwk => C.sha256Hex(jwk.x + '.' + jwk.y).slice(0, 12);
+  C.sign = async function (privJwk, obj) {
+    const key = await subtle().importKey('jwk', privJwk, ALG, false, ['sign']);
+    const sig = await subtle().sign({ name: 'ECDSA', hash: 'SHA-256' }, key, C.utf8(C.canonical(obj)));
+    return b64u(new Uint8Array(sig));
+  };
+  C.verify = async function (pubJwk, obj, sig) {
+    try {
+      const key = await subtle().importKey('jwk', pubJwk, ALG, false, ['verify']);
+      return await subtle().verify({ name: 'ECDSA', hash: 'SHA-256' }, key, unb64u(sig), C.utf8(C.canonical(obj)));
+    } catch (e) { return false; }
+  };
+
+  g.OvaCrypto = C;
+  if (typeof module !== 'undefined' && module.exports) module.exports = C;
+})(globalThis);
+</script>
+<script>/* OvaKB — قاعدة معرفة تعليمية: أغذية، مكملات/أعشاب، مراجع.
+   تنبيه: محتوى تعليمي يحتاج مراجعة طبيب/صيدلي/أخصائية تغذية قبل أي استخدام سريري. */
+(function (g) {
+  'use strict';
+  const KB = {};
+
+  KB.LEGEND = [
+    { k: '●', t: 'دليل بشري منشور', d: 'دراسة على بشر (تجربة أو مراجعة منهجية أو مسح).' },
+    { k: '◐', t: 'دليل مخبري/حيواني', d: 'اختبار على نموذج حيواني أو على منضدة العمل.' },
+    { k: '○', t: 'مخطَّط', d: 'لم يُختبر بعد؛ ضمن خطة التحقق.' }
+  ];
+
+  // حصة تقريبية لكل صنف (قيم تقريبية، تُراجع مع أخصائية تغذية)
+  // slot: b=فطور l=غداء/عشاء s=وجبة خفيفة ; role: P بروتين، C كربوهيدرات، V خضار، F دهون صحية، D ألبان، U فاكهة
+  KB.FOODS = [
+    { id: 'egg', ar: 'بيضة مسلوقة', serving: '1 بيضة', kcal: 78, carb: 0.6, protein: 6.3, fat: 5.3, fiber: 0, gi: 'منخفض', role: 'P', slots: 'b' },
+    { id: 'foul', ar: 'فول مدمس', serving: '½ كوب', kcal: 110, carb: 19, protein: 7, fat: 0.5, fiber: 6, gi: 'منخفض', role: 'C', slots: 'b' },
+    { id: 'wholebread', ar: 'خبز بر (أسمر)', serving: 'شريحة 30 جم', kcal: 80, carb: 14, protein: 3, fat: 1, fiber: 2, gi: 'متوسط', role: 'C', slots: 'b' },
+    { id: 'oats', ar: 'شوفان مطبوخ', serving: '1 كوب', kcal: 155, carb: 27, protein: 5.5, fat: 2.6, fiber: 4, gi: 'منخفض', role: 'C', slots: 'b' },
+    { id: 'labneh', ar: 'لبنة قليلة الدسم', serving: '2 ملعقة كبيرة', kcal: 45, carb: 2, protein: 3, fat: 3, fiber: 0, gi: 'منخفض', role: 'D', slots: 'b' },
+    { id: 'yogurt', ar: 'زبادي سادة قليل الدسم', serving: '1 كوب', kcal: 130, carb: 15, protein: 11, fat: 3, fiber: 0, gi: 'منخفض', role: 'D', slots: 'bs' },
+    { id: 'chicken', ar: 'دجاج مشوي', serving: '100 جم', kcal: 165, carb: 0, protein: 31, fat: 3.6, fiber: 0, gi: '—', role: 'P', slots: 'l' },
+    { id: 'fish', ar: 'سمك أبيض مشوي', serving: '100 جم', kcal: 125, carb: 0, protein: 22, fat: 3.5, fiber: 0, gi: '—', role: 'P', slots: 'l' },
+    { id: 'lean', ar: 'لحم أحمر قليل الدهن', serving: '90 جم', kcal: 185, carb: 0, protein: 26, fat: 8, fiber: 0, gi: '—', role: 'P', slots: 'l' },
+    { id: 'lentil', ar: 'عدس مطبوخ', serving: '½ كوب', kcal: 115, carb: 20, protein: 9, fat: 0.4, fiber: 8, gi: 'منخفض', role: 'C', slots: 'l' },
+    { id: 'chickpea', ar: 'حمص مسلوق', serving: '½ كوب', kcal: 135, carb: 22, protein: 7, fat: 2, fiber: 6, gi: 'منخفض', role: 'C', slots: 'l' },
+    { id: 'brownrice', ar: 'أرز بني مطبوخ', serving: '½ كوب', kcal: 110, carb: 23, protein: 2.5, fat: 1, fiber: 2, gi: 'متوسط', role: 'C', slots: 'l' },
+    { id: 'basmati', ar: 'أرز بسمتي مطبوخ', serving: '½ كوب', kcal: 130, carb: 28, protein: 2.7, fat: 0.3, fiber: 0.5, gi: 'متوسط-مرتفع', role: 'C', slots: 'l' },
+    { id: 'salad', ar: 'سلطة خضار بزيت زيتون', serving: 'طبق متوسط', kcal: 80, carb: 8, protein: 2, fat: 5, fiber: 3, gi: 'منخفض', role: 'V', slots: 'bl' },
+    { id: 'cookedveg', ar: 'خضار مطبوخة', serving: '1 كوب', kcal: 55, carb: 10, protein: 3, fat: 0.5, fiber: 4, gi: 'منخفض', role: 'V', slots: 'l' },
+    { id: 'almond', ar: 'لوز', serving: 'حفنة 28 جم', kcal: 165, carb: 6, protein: 6, fat: 14, fiber: 3.5, gi: 'منخفض', role: 'F', slots: 's' },
+    { id: 'apple', ar: 'تفاحة متوسطة', serving: '1 حبة', kcal: 95, carb: 25, protein: 0.5, fat: 0.3, fiber: 4.4, gi: 'منخفض', role: 'U', slots: 's' },
+    { id: 'date', ar: 'تمر', serving: '1 حبة', kcal: 66, carb: 18, protein: 0.4, fat: 0, fiber: 1.6, gi: 'متوسط', role: 'U', slots: 's' },
+    { id: 'cucumber', ar: 'خيار وجزر', serving: '1 كوب', kcal: 25, carb: 6, protein: 1, fat: 0.1, fiber: 2, gi: 'منخفض', role: 'V', slots: 's' },
+    { id: 'cottage', ar: 'جبن قريش', serving: '½ كوب', kcal: 90, carb: 4, protein: 12, fat: 2.5, fiber: 0, gi: 'منخفض', role: 'P', slots: 'bs' }
+  ];
+
+  // مكملات/أعشاب — محتوى تعليمي محافظ. level: ◐/● للدليل العام، لا يُعد توصية علاجية.
+  KB.SUPPLEMENTS = [
+    { id: 'myo', names: ['ميو اينوزيتول', 'ميو-اينوزيتول', 'اينوزيتول', 'inositol', 'myo-inositol'], ar: 'ميو-إينوزيتول',
+      evidence: 'تجارب عشوائية صغيرة ومراجعات تشير إلى تحسن محتمل في حساسية الإنسولين وانتظام الدورة؛ جودة الدليل متفاوتة.',
+      cautions: 'عادة جيد التحمل؛ قد يسبب اضطراباً هضمياً بجرعات عالية. يُناقش مع الطبيب خاصة في الحمل.', flags: [] },
+    { id: 'vitd', names: ['فيتامين د', 'فيتامين دال', 'vitamin d', 'vit d'], ar: 'فيتامين د',
+      evidence: 'الدليل على فائدته في أعراض المتلازمة متضارب؛ المنطقي قياس المستوى في الدم أولاً.',
+      cautions: 'الجرعات الزائدة قد ترفع الكالسيوم؛ الجرعة يحددها الطبيب وفق التحليل.', flags: ['needs_lab'] },
+    { id: 'omega3', names: ['اوميغا 3', 'اوميجا 3', 'أوميغا3', 'omega 3', 'omega-3', 'زيت السمك'], ar: 'أوميغا-3',
+      evidence: 'قد يخفض الدهون الثلاثية؛ أثره على بقية أعراض المتلازمة غير مؤكد.',
+      cautions: 'قد يزيد قابلية النزف مع مضادات التخثر/مميعات الدم؛ يُبلَّغ الطبيب قبل الاستخدام.', flags: ['bleeding'] },
+    { id: 'spearmint', names: ['النعناع', 'شاي النعناع', 'سبيرمنت', 'spearmint'], ar: 'شاي النعناع الأخضر (Spearmint)',
+      evidence: 'دراسات صغيرة وقصيرة المدة على الأندروجينات؛ الأدلة محدودة.',
+      cautions: 'غالباً آمن بكميات الشاي المعتادة؛ الإفراط قد يزعج المعدة.', flags: [] },
+    { id: 'cinnamon', names: ['القرفه', 'قرفة', 'cinnamon'], ar: 'القرفة',
+      evidence: 'أدلة ضعيفة ومتفاوتة على تأثيرها في الجلوكوز.',
+      cautions: 'قرفة «كاسيا» تحتوي كومارين بكميات قد تضر الكبد عند الإفراط؛ يُفضَّل الاعتدال.', flags: [] },
+    { id: 'berberine', names: ['بربرين', 'berberine'], ar: 'بربرين',
+      evidence: 'بعض التجارب تُظهر أثراً على الجلوكوز والدهون، لكن جودة الدليل متفاوتة.',
+      cautions: 'له تداخلات دوائية محتملة (مثل أدوية السكر والأدوية المعالجة عبر الكبد)، ولا يُستخدم في الحمل. يلزم مراجعة الصيدلي/الطبيب.', flags: ['interaction', 'pregnancy'] },
+    { id: 'nac', names: ['ان اسيتيل سيستين', 'nac', 'n-acetylcysteine'], ar: 'ن-أسيتيل سيستين (NAC)',
+      evidence: 'تجارب صغيرة؛ الدليل أولي.',
+      cautions: 'قد يسبب أعراضاً هضمية؛ يُناقش مع الطبيب.', flags: [] },
+    { id: 'licorice', names: ['عرق السوس', 'licorice', 'liquorice'], ar: 'عرق السوس',
+      evidence: 'استُخدم تقليدياً؛ الأدلة السريرية في المتلازمة محدودة.',
+      cautions: 'قد يرفع ضغط الدم ويخفض البوتاسيوم؛ يُتجنب عند ارتفاع الضغط أو في الحمل ما لم يوجّه الطبيب.', flags: ['hypertension', 'pregnancy'] }
+  ];
+
+  KB.REFERENCES = [
+    { id: 1, lvl: '●', short: 'WHO — Polycystic ovary syndrome (fact sheet)', full: 'World Health Organization. Polycystic ovary syndrome. Fact sheet, 2026.', url: 'https://www.who.int/news-room/fact-sheets/detail/polycystic-ovary-syndrome', use: 'الانتشار 10–13% من النساء في سن الإنجاب، وحتى 70% غير مشخَّصات.' },
+    { id: 2, lvl: '●', short: 'Alenzi et al., BMC Women\'s Health 2024', full: 'Alenzi et al. BMC Womens Health 2024;24:623.', url: 'https://doi.org/10.1186/s12905-024-03446-9', use: 'مسح سعودي (عينة ملاءمة): 22.5% إبلاغ ذاتي.' },
+    { id: 3, lvl: '●', short: 'Gibson-Helm et al., JCEM 2016', full: 'Gibson-Helm M, et al. J Clin Endocrinol Metab 2016. 1,385 امرأة.', url: 'https://mdedge.com/content/survey-commonly-delayed-pcos-diagnosis-suggests-room-clinical-improvement', use: 'تأخر التشخيص أكثر من سنتين لدى 34%، وعدم الرضا عن المعلومات.' },
+    { id: 4, lvl: '●', short: 'Nair et al., ISPOR 2020', full: 'Nair et al. Value in Health 2020;23(5) Suppl.', url: 'https://www.ispor.org/heor-resources/presentations-database/presentation/intl2020-3182/101373', use: 'الالتزام بالعلاج الدوائي 21.7–86%.' },
+    { id: 5, lvl: '●', short: 'Notaro & Neto, JARG 2022', full: 'Notaro ALG, Neto FTL. J Assist Reprod Genet 2022;39(3):573–579.', url: 'https://doi.org/10.1007/s10815-022-02429-9', use: 'الأعراض الهضمية شائعة مع الميتفورمين.' },
+    { id: 6, lvl: '●', short: 'Domecq et al., JCEM 2013', full: 'Domecq JP, et al. J Clin Endocrinol Metab 2013;98(12):4655–63. مراجعة منهجية.', url: 'https://nutrition-evidence.com/article/199604/lifestyle-modification-programs-in-polycystic-ovary-syndrome-systematic-review-and-meta-analysis', use: 'نطاقات التوأم الرقمي: سكر صائم −2.3 (−4.5 إلى −0.1) ملغ/دل، إنسولين صائم −2.1 (−3.3 إلى −1.0).' },
+    { id: 7, lvl: '●', short: 'Kaur et al., PLoS ONE 2021', full: 'Kaur et al. PLoS ONE 2021;16(8):e0255830.', url: 'https://doi.org/10.1371/journal.pone.0255830', use: 'شكاوى المريضات: الآثار الجانبية والتكلفة وتكرار التحاليل.' },
+    { id: 8, lvl: '●', short: 'Audet et al., JAMA 2001 (ملخص AAFP)', full: 'Audet MC, et al. JAMA 2001;285:2347–54.', url: 'https://www.aafp.org/afp/2002/0115/p294a', use: 'الرقعة الجلدية: التزام 88.1% مقابل 77.7% للأقراص (1,417 امرأة).' },
+    { id: 9, lvl: '●', short: 'Rouphael et al., Lancet 2017', full: 'Rouphael NG, et al. Lancet 2017. doi:10.1016/S0140-6736(17)30575-5', url: 'https://mdedge.com/content/small-study-patients-prefer-microneedle-flu-vaccine', use: '70% (33/47) فضّلوا رقعة الإبر الدقيقة على الحقن.' },
+    { id: 10, lvl: '●', short: 'Martens et al., JAMA 2021', full: 'Martens T, et al. JAMA 2021 (CGM).', url: 'https://www.sciencedaily.com/releases/2021/07/210726170357.htm', use: 'القياس المستمر: انخفاض HbA1c بمقدار 1.1 مقابل 0.16.' },
+    { id: 11, lvl: '●', short: 'Sharma et al., Anal Methods 2018', full: 'Sharma S, et al. Anal Methods 2018;10(18):2088–2095.', url: 'https://doi.org/10.1039/c8ay00264a', use: 'إبر دقيقة لقياس جلوكوز السائل الخلالي: MARD ≈ 9%.' },
+    { id: 12, lvl: '●', short: 'Norman et al., Pediatr Diabetes 2013', full: 'Norman JJ, et al. Pediatr Diabetes 2013;14(6):459–465.', url: 'https://doi.org/10.1111/pedi.12031', use: 'توصيل الإنسولين بإبر دقيقة مجوّفة: بدء مفعول أسرع بنحو 22 دقيقة (16 طفلاً).' },
+    { id: 13, lvl: '●', short: 'Jing et al., Chem Eng J 2024', full: 'Jing et al. Chem Eng J 2024;502:157488.', url: 'https://doi.org/10.1016/j.cej.2024.157488', use: 'استشعار هرمون (كورتيزول) عبر إبر دقيقة — متطوعون أصحاء.' },
+    { id: 14, lvl: '●', short: 'Fang et al., J Endocrinol Invest 2022', full: 'Fang M, et al. J Endocrinol Invest 2022. 12 تجربة.', url: 'https://doi.org/10.1007/s40618-021-01674-6', use: 'زيادة الوقت ضمن النطاق ≈ 7.91% مع القياس المستمر.' },
+    { id: 15, lvl: '◐', short: 'Huang et al., Theranostics 2024', full: 'Huang et al. Theranostics 2024;14(4):1662–1682.', url: 'https://doi.org/10.7150/thno.92910', use: 'رقعة إبر دقيقة تجمع الاستشعار والتوصيل (جرذان).' },
+    { id: 16, lvl: '◐', short: 'Bußmann et al., Appl Sci 2021', full: 'Bußmann A, et al. Appl Sci 2021;11(17):8008.', url: 'https://doi.org/10.3390/app11178008', use: 'مضخة MEMS مصغّرة (اختبار منضدي).' },
+    { id: 17, lvl: '◐', short: 'Yu et al., DDDT 2025', full: 'Yu et al. Drug Des Devel Ther 2025;19:2473–2490.', url: 'https://doi.org/10.2147/DDDT.S502701', use: 'رقعة إبر دقيقة للبروجسترون (فئران/جرذان؛ لا دراسة بشرية).' },
+    { id: 18, lvl: '○', short: 'Symex Labs — جامعة ملبورن (خبر)', full: 'University of Melbourne newsroom, March 2026.', url: 'https://www.unimelb.edu.au/newsroom/news/2026/march/new-hormone-sensor-developed-to-streamline-ivf-process', use: 'مستشعر هرمونات عبر السائل الخلالي في طور مبكر (خبر مؤسسي).' },
+    { id: 19, lvl: '●', short: 'Shamanna et al., AACE Clin Case Rep 2025', full: 'Shamanna P, et al. AACE Clin Case Rep 2025;11(1):70–74.', url: 'https://doaj.org/article/4b110d9e97164f56b2a990be31f3e0f9', use: 'حالة واحدة لتوأم رقمي في المتلازمة (توضيحي فقط).' },
+    { id: 20, lvl: '●', short: 'Cochrane — lifestyle in PCOS', full: 'Cochrane review: lifestyle changes in PCOS (15 trials, 498 women).', url: 'https://cgf.cochrane.org/news/blogshot-lifestyle-changes-women-polycystic-ovary-syndrome', use: 'جودة الدليل منخفضة إلى منخفضة جداً — لذا نعرض نطاقات لا وعوداً.' },
+    { id: 21, lvl: '●', short: 'Higham et al., 1990 — PBAC', full: 'Higham JM, et al. Br J Obstet Gynaecol 1990;97:734–9. مخطط تقدير فقد الدم.', url: 'https://read.qxmd.com/read/2400752/assessment-of-menstrual-blood-loss-using-a-pictorial-chart', use: 'منهجية تقدير النزف (PBAC).' },
+    { id: 22, lvl: 'مرجع', short: 'Insulet — Omnipod 5 Training Series: System Components (فيديو؛ ليس من إنتاج الفريق)', full: 'Insulet Corporation. Omnipod 5 Training Series — System Components (صفحة فيديو رسمية).', url: 'https://www.omnipod.com/current-podders/resources/omnipod-5/videos/overview', use: 'فيديو مرجعي لآلية «مستشعر ← خوارزمية ← توصيل مراقَب» المطبّقة سريريًا.' },
+    { id: 23, lvl: '●', short: 'Wilcox et al., 2004 — نافذة الخصوبة', full: 'Wilcox AJ, Dunson DB, Weinberg CR, et al. Likelihood of conception with a single act of intercourse: providing benchmark rates for assessment of post-coital contraceptives / The timing of the fertile window. Hum Reprod 2004;19(7):1539–43.', url: 'https://scholars.duke.edu/publication/769684', use: 'نافذة الخصوبة ستة أيام تنتهي بيوم الإباضة — أساس تقدير النافذة في تبويب الخصوبة.' },
+    { id: 24, lvl: '●', short: 'International PCOS Guideline 2023 — ملخص', full: 'Teede HJ, et al. International evidence-based guideline for the assessment and management of PCOS 2023 (Summary).', url: 'https://assets.monashivf.com/assets/Summary-International-evidence-based-guideline-for-the-assessment-and-management-of-polycystic-ovary-syndrome-2023.pdf', use: 'تعريف عدم انتظام الدورة: أقل من 21 أو أكثر من 35 يوماً، أو أقل من 8 دورات سنوياً، أو أي دورة تتجاوز 90 يوماً.' }
+  ];
+
+  g.OvaKB = KB;
+  if (typeof module !== 'undefined' && module.exports) module.exports = KB;
+})(globalThis);
+</script>
+<script>/* OvaDevice — محاكي الجهاز (قرص إلكتروني + رقعة). بيانات تركيبية لأغراض العرض فقط. */
+(function (g) {
+  'use strict';
+  const U = g.OvaUtil;
+  const D = {};
+  D.HARD = { singleMaxUL: 50, dailyMaxUL: 200 };       // حدود صلبة في برنامج الجهاز لا يتجاوزها أي مخطط
+  D.PATCH_LIFE_DAYS = 7;
+  D.RESERVOIR_UL = 1000;
+  D.LOW_RESERVOIR_UL = 150;
+
+  D.newState = function (seed) {
+    return {
+      deviceId: 'OVA-POD-0001', seed: seed || 20260, patchApplied: false, patchAppliedAt: null,
+      reservoirUL: 0, batteryPct: 100, bleUp: true, faultLatched: null,
+      faults: { occlusion: false, overflow: false, driftFast: false },
+      driftPerDay: 0.012, calib: null, baseGlucose: 94
+    };
+  };
+
+  D.create = function (state, getMeals) {
+    const s = state;
+    const dev = { state: s };
+    const meals = () => (getMeals ? getMeals() : []);
+
+    dev.ageDays = t => s.patchApplied ? Math.max(0, (t - s.patchAppliedAt) / U.DAY) : 0;
+    dev.drift = () => s.faults.driftFast ? 0.05 : s.driftPerDay;
+
+    dev.applyPatch = t => {
+      s.patchApplied = true; s.patchAppliedAt = t; s.reservoirUL = D.RESERVOIR_UL;
+      s.calib = null; s.faultLatched = null; s.batteryPct = 100;
+    };
+    dev.removePatch = () => { s.patchApplied = false; s.patchAppliedAt = null; s.reservoirUL = 0; s.calib = null; };
+    dev.clearFault = () => { s.faultLatched = null; s.faults.occlusion = false; s.faults.overflow = false; };
+    dev.tick = dtMin => { if (s.patchApplied) s.batteryPct = Math.max(0, s.batteryPct - 0.004 * dtMin); };
+
+    // الجلوكوز «الحقيقي» (نموذج وجبات: استجابة غاما مبسّطة)
+    dev.trueGlucose = t => {
+      const h = U.hour(t);
+      let gl = s.baseGlucose + 3 * Math.sin(2 * Math.PI * (h - 4) / 24);
+      const dayN = U.gauss(U.rng((s.seed ^ Math.floor(U.dayStart(t) / U.DAY)) >>> 0));
+      gl += 2.5 * dayN;
+      for (const m of meals()) {
+        const x = (t - m.t) / (50 * U.MIN);
+        if (x >= 0 && x < 8) gl += m.carbs * 0.9 * x * Math.exp(1 - x);
+      }
+      return gl;
+    };
+    const noiseAt = t => {
+      const r = U.rng((s.seed + Math.floor(t / U.MIN) * 2654435761) >>> 0);
+      return U.gauss(r);
+    };
+
+    // قراءة السائل الخلالي: تأخر ~7 دقائق، انجراف الحساسية مع عمر الرقعة، ضجيج، ومعايرة بقياس دم
+    dev.rawSens = t => {
+      const age = dev.ageDays(t);
+      return Math.max(0.3, 1 - dev.drift() * age);
+    };
+    dev.senseGlucose = t => {
+      if (!s.patchApplied) return null;
+      const age = dev.ageDays(t);
+      const lagged = dev.trueGlucose(t - 7 * U.MIN);
+      let sens = dev.rawSens(t);
+      let ageEff = age;
+      if (s.calib) { sens = sens / dev.rawSens(s.calib.t) * s.calib.factor; ageEff = Math.max(0, age - dev.ageDays(s.calib.t)); }
+      const value = lagged * sens + noiseAt(t) * 2.0 * (1 + age * 0.04);
+      const q = U.clamp(1 - ageEff * dev.drift() * 4 - (s.faults.driftFast ? 0.1 : 0), 0, 1);
+      return { value: U.round(value, 1), q: U.round(q, 2) };
+    };
+    // معايرة بقياس دم مرجعي (إصبع/مختبر)
+    dev.calibrate = (t, ref) => {
+      if (!s.patchApplied) return false;
+      const raw = dev.trueGlucose(t - 7 * U.MIN) * dev.rawSens(t);
+      s.calib = { t, factor: U.clamp(ref / raw, 0.8, 1.25) };
+      return true;
+    };
+    // مؤشر هرموني HM1 (وحدات اعتباطية): يُحدَّد المؤشر الفعلي بعد مرحلة التحقق
+    dev.senseHM1 = t => {
+      if (!s.patchApplied) return null;
+      const v = 50 + 7 * Math.sin(2 * Math.PI * t / U.DAY) + 5 * Math.sin(2 * Math.PI * t / (28 * U.DAY)) + 1.5 * noiseAt(t + 17);
+      return U.round(v, 1);
+    };
+
+    // التوصيل: حقن مُوجَّه + مراقبة تدفق (المأمور مقابل المقاس)
+    dev.deliver = (now, doseUL, rateULmin) => {
+      const rate = rateULmin || 5;
+      if (!s.patchApplied) return { ok: false, status: 'NO_PATCH', commandedUL: doseUL, deliveredUL: 0 };
+      let factor = 1 + 0.03 * U.gauss(U.rng((s.seed + Math.floor(now / U.MIN)) >>> 0));
+      if (s.faults.occlusion) factor = 0.02;
+      if (s.faults.overflow) factor = 1.35;
+      const measuredFull = doseUL * factor;
+      const dev_ = (measuredFull - doseUL) / doseUL;
+      if (Math.abs(dev_) > 0.20) {
+        const delivered = U.round(Math.min(doseUL * 0.2 * Math.max(0, factor), doseUL), 2);
+        s.reservoirUL = Math.max(0, s.reservoirUL - delivered);
+        s.faultLatched = 'FLOW_MISMATCH';
+        return { ok: false, status: 'HALTED_FLOW_MISMATCH', commandedUL: doseUL, deliveredUL: delivered, measuredUL: U.round(measuredFull, 2), deviationPct: U.round(dev_ * 100, 1), durationMin: U.round(doseUL / rate * 0.2, 2) };
+      }
+      const delivered = U.round(measuredFull, 2);
+      s.reservoirUL = Math.max(0, s.reservoirUL - delivered);
+      return { ok: true, status: 'DELIVERED', commandedUL: doseUL, deliveredUL: delivered, measuredUL: delivered, deviationPct: U.round(dev_ * 100, 1), durationMin: U.round(doseUL / rate, 2) };
+    };
+
+    dev.alerts = now => {
+      const a = [];
+      if (!s.patchApplied) a.push({ lvl: 'warn', code: 'NO_PATCH', text: 'لا توجد رقعة مركّبة.' });
+      else {
+        const age = dev.ageDays(now);
+        if (age >= D.PATCH_LIFE_DAYS) a.push({ lvl: 'warn', code: 'PATCH_EXPIRED', text: 'انتهى العمر التصميمي للرقعة (' + D.PATCH_LIFE_DAYS + ' أيام): يُنصح باستبدالها.' });
+        if (s.reservoirUL <= D.LOW_RESERVOIR_UL) a.push({ lvl: 'warn', code: 'RESERVOIR_LOW', text: 'الخزان منخفض (' + U.round(s.reservoirUL) + ' µL).' });
+        const sg = dev.senseGlucose(now);
+        if (sg && sg.q < 0.6) a.push({ lvl: 'warn', code: 'SIGNAL_POOR', text: 'جودة الإشارة منخفضة؛ يُنصح بقياس دم مرجعي للمعايرة.' });
+      }
+      if (s.faultLatched) a.push(s.faultLatched === 'USER_STOP' ? { lvl: 'warn', code: 'USER_STOP', text: 'أوقفتِ التوصيل يدوياً (إيقاف طارئ). لن تُنفَّذ أي جرعة حتى تستأنفي. إن كان السبب أعراضاً فتواصلي مع طبيبك.' } : { lvl: 'danger', code: s.faultLatched, text: 'توقّف التوصيل تلقائياً: عدم تطابق التدفق المقاس مع المأمور به. يلزم تدخل.' });
+      if (s.batteryPct <= 15) a.push({ lvl: 'warn', code: 'BATTERY_LOW', text: 'البطارية منخفضة (' + U.round(s.batteryPct) + '%).' });
+      if (!s.bleUp) a.push({ lvl: 'info', code: 'BLE_DOWN', text: 'انقطاع اتصال البلوتوث؛ يستمر الجهاز بالمخطط الموقَّع وفق السياسة.' });
+      return a;
+    };
+    return dev;
+  };
+
+  g.OvaDevice = D;
+  if (typeof module !== 'undefined' && module.exports) module.exports = D;
+})(globalThis);
+</script>
+<script>/* OvaSecurity — بوابة الأوامر في الجهاز: توقيع الطبيب، الخطة الموقَّعة، حدود الجرعة، سجل تدقيق مترابط */
+(function (g) {
+  'use strict';
+  const U = g.OvaUtil, C = g.OvaCrypto, D = g.OvaDevice;
+  const S = {};
+
+  S.CODES = {
+    UNSIGNED: 'أمر بلا توقيع (مثل أمر من الذكاء الاصطناعي)',
+    UNKNOWN_KEY: 'مفتاح غير معروف للجهاز',
+    KEY_REVOKED: 'مفتاح الطبيب مُلغى',
+    BAD_SIGNATURE: 'التوقيع غير صالح (تم العبث بالأمر)',
+    WRONG_DEVICE: 'الأمر موجّه لجهاز آخر',
+    WRONG_PATIENT: 'الأمر موجّه لمريضة أخرى',
+    NOT_YET_VALID: 'الأمر لم يحن وقته',
+    EXPIRED: 'انتهت صلاحية الأمر',
+    REPLAY_NONCE: 'أمر مُعاد الإرسال (nonce مستخدم)',
+    SEQ_NOT_INCREASING: 'رقم تسلسل غير متزايد',
+    NO_PLAN: 'لا توجد خطة علاج موقَّعة',
+    NOT_IN_PLAN: 'المادة غير مدرجة في الخطة',
+    DOSE_OVER_SINGLE_MAX: 'الجرعة تتجاوز الحد الأقصى للجرعة الواحدة',
+    DAILY_CAP_EXCEEDED: 'تجاوز السقف اليومي',
+    MIN_INTERVAL: 'أقل من الفاصل الزمني الأدنى بين الجرعات',
+    DEVICE_FAULT: 'عطل مُسجَّل في الجهاز (حالة آمنة)',
+    NO_PATCH: 'لا توجد رقعة',
+    RESERVOIR_LOW: 'الخزان غير كافٍ',
+    BLE_DOWN: 'الاتصال منقطع',
+    PLAN_ROLLBACK: 'رفض خطة بإصدار أقدم (حماية من الرجوع)',
+    PLAN_EXPIRED: 'انتهت صلاحية الخطة',
+    PLAN_EXCEEDS_HARD_LIMIT: 'الخطة تتجاوز الحدود الصلبة للجهاز',
+    PLAN_INVALID: 'خطة غير مكتملة',
+    LATE_WINDOW: 'فات موعد الجرعة (أكثر من 6 ساعات)',
+    BLE_DOWN_HOLD: 'تعليق الجرعة (سياسة فقدان الإشارة: تعليق)',
+    HALTED_FLOW_MISMATCH: 'توقف تلقائي: تدفق مقاس لا يطابق المأمور به'
+  };
+
+  S.newState = function (deviceId, patientId) {
+    return { deviceId, patientId, trustedKeys: {}, plan: null, planKeyId: null, lastSeq: 0, nonces: [], deliveries: [], done: {}, audit: [], planExpiredLogged: false };
+  };
+
+  S.verifyChain = function (audit) {
+    let prev = 'GENESIS';
+    for (let i = 0; i < audit.length; i++) {
+      const e = audit[i];
+      const h = C.sha256Hex(prev + C.canonical({ i: e.i, t: e.t, type: e.type, code: e.code, detail: e.detail }));
+      if (e.i !== i || e.prev !== prev || e.hash !== h) return { ok: false, brokenAt: i };
+      prev = e.hash;
+    }
+    return { ok: true, brokenAt: -1, length: audit.length };
+  };
+
+  S.createGate = function (device, state) {
+    const s = state;
+    const gate = { s, device };
+
+    gate.audit = (t, type, code, detail) => {
+      const prev = s.audit.length ? s.audit[s.audit.length - 1].hash : 'GENESIS';
+      const e = { i: s.audit.length, t, type, code: code || '', detail: detail || '' };
+      e.prev = prev;
+      e.hash = C.sha256Hex(prev + C.canonical({ i: e.i, t, type, code: e.code, detail: e.detail }));
+      s.audit.push(e);
+      return e;
+    };
+    gate.provisionKey = (keyId, jwk, t) => { s.trustedKeys[keyId] = { jwk, status: 'active' }; gate.audit(t, 'KEY', 'PROVISIONED', keyId); };
+    gate.revokeKey = (keyId, t) => { if (s.trustedKeys[keyId]) { s.trustedKeys[keyId].status = 'revoked'; gate.audit(t, 'KEY', 'REVOKED', keyId); } };
+
+    gate.deliveredToday = (substance, now) => {
+      const k = U.dayKey(now);
+      return s.deliveries.filter(d => d.substance === substance && U.dayKey(d.t) === k).reduce((a, d) => a + d.deliveredUL, 0);
+    };
+    gate.limitCheck = (item, doseUL, now) => {
+      if (doseUL > item.singleMaxUL || doseUL > D.HARD.singleMaxUL) return 'DOSE_OVER_SINGLE_MAX';
+      if (gate.deliveredToday(item.substance, now) + doseUL > Math.min(item.dailyCapUL, D.HARD.dailyMaxUL)) return 'DAILY_CAP_EXCEEDED';
+      const last = s.deliveries.filter(d => d.substance === item.substance && d.deliveredUL > 0).slice(-1)[0];
+      if (last && now - last.t < item.minIntervalMin * U.MIN) return 'MIN_INTERVAL';
+      return null;
+    };
+    gate.deviceCheck = (doseUL, needBle) => {
+      const d = device.state;
+      if (d.faultLatched) return 'DEVICE_FAULT';
+      if (!d.patchApplied) return 'NO_PATCH';
+      if (d.reservoirUL < doseUL) return 'RESERVOIR_LOW';
+      if (needBle && !d.bleUp) return 'BLE_DOWN';
+      return null;
+    };
+    const reject = (now, code, detail) => { gate.audit(now, 'REJECT', code, detail); return { ok: false, code, label: S.CODES[code] || code }; };
+    const keyCheck = async (env, payload, now) => {
+      if (!env || !env.sig || !payload || !payload.keyId) return 'UNSIGNED';
+      const k = s.trustedKeys[payload.keyId];
+      if (!k) return 'UNKNOWN_KEY';
+      if (k.status !== 'active') return 'KEY_REVOKED';
+      if (!(await C.verify(k.jwk, payload, env.sig))) return 'BAD_SIGNATURE';
+      return null;
+    };
+
+    gate.installPlan = async function (env, now) {
+      const p = env && env.plan;
+      const kc = await keyCheck(env, p, now);
+      if (kc) return reject(now, kc, 'plan');
+      if (!p.items || !p.items.length || !p.version) return reject(now, 'PLAN_INVALID', 'plan');
+      if (p.deviceId !== s.deviceId) return reject(now, 'WRONG_DEVICE', 'plan');
+      if (p.patientId !== s.patientId) return reject(now, 'WRONG_PATIENT', 'plan');
+      if (now < p.issuedAt) return reject(now, 'NOT_YET_VALID', 'plan');
+      if (now > p.expiresAt) return reject(now, 'EXPIRED', 'plan');
+      if (s.plan && p.version <= s.plan.version) return reject(now, 'PLAN_ROLLBACK', 'v' + p.version + '<=v' + s.plan.version);
+      for (const it of p.items) {
+        if (it.singleMaxUL > D.HARD.singleMaxUL || it.dailyCapUL > D.HARD.dailyMaxUL) return reject(now, 'PLAN_EXCEEDS_HARD_LIMIT', it.substance);
+      }
+      s.plan = p; s.planKeyId = p.keyId; s.planExpiredLogged = false;
+      gate.audit(now, 'PLAN', 'INSTALLED', 'v' + p.version + ' by ' + p.keyId);
+      return { ok: true, version: p.version };
+    };
+
+    // أمر لمرة واحدة موقَّع
+    gate.execute = async function (env, now) {
+      const c = env && env.cmd;
+      const kc = await keyCheck(env, c, now);
+      if (kc) return reject(now, kc, c && c.cmdId);
+      if (c.deviceId !== s.deviceId) return reject(now, 'WRONG_DEVICE', c.cmdId);
+      if (c.patientId !== s.patientId) return reject(now, 'WRONG_PATIENT', c.cmdId);
+      if (now < c.issuedAt) return reject(now, 'NOT_YET_VALID', c.cmdId);
+      if (now > c.expiresAt) return reject(now, 'EXPIRED', c.cmdId);
+      if (s.nonces.includes(c.nonce)) return reject(now, 'REPLAY_NONCE', c.cmdId);
+      if (!(c.seq > s.lastSeq)) return reject(now, 'SEQ_NOT_INCREASING', c.cmdId);
+      s.nonces.push(c.nonce); if (s.nonces.length > 200) s.nonces.shift();
+      s.lastSeq = c.seq;
+      if (!s.plan) return reject(now, 'NO_PLAN', c.cmdId);
+      if (now > s.plan.expiresAt) return reject(now, 'PLAN_EXPIRED', c.cmdId);
+      const item = s.plan.items.find(i => i.substance === c.substance);
+      if (!item) return reject(now, 'NOT_IN_PLAN', c.cmdId);
+      const lc = gate.limitCheck(item, c.doseUL, now);
+      if (lc) return reject(now, lc, c.cmdId);
+      const dc = gate.deviceCheck(c.doseUL, true);
+      if (dc) return reject(now, dc, c.cmdId);
+      const r = device.deliver(now, c.doseUL, c.rateULmin);
+      if (r.deliveredUL > 0) s.deliveries.push({ t: now, substance: c.substance, commandedUL: c.doseUL, deliveredUL: r.deliveredUL, source: 'cmd' });
+      gate.audit(now, r.ok ? 'DELIVER' : 'HALT', r.status, c.cmdId + ' ' + c.substance + ' cmd=' + c.doseUL + ' meas=' + r.measuredUL);
+      return Object.assign({ code: r.ok ? 'OK' : r.status, label: r.ok ? 'تم التوصيل' : S.CODES[r.status] }, r);
+    };
+
+    // تنفيذ الخطة الموقَّعة تلقائياً (يعمل داخل الجهاز حتى عند انقطاع البلوتوث وفق السياسة)
+    gate.runSchedule = function (now) {
+      const p = s.plan, out = [];
+      if (!p) return out;
+      if (now > p.expiresAt) {
+        if (!s.planExpiredLogged) { s.planExpiredLogged = true; gate.audit(now, 'PLAN', 'PLAN_EXPIRED', 'v' + p.version); }
+        return out;
+      }
+      const day = U.dayKey(now);
+      for (const it of p.items) {
+        for (const tm of it.times) {
+          const key = day + '|' + it.substance + '|' + tm;
+          if (s.done[key]) continue;
+          const due = U.dayStart(now) + U.parseHM(tm);
+          if (now < due) continue;
+          s.done[key] = 1;
+          if (now - due > 6 * U.HOUR) { gate.audit(now, 'SKIP', 'LATE_WINDOW', key); out.push({ code: 'LATE_WINDOW', substance: it.substance, t: now }); continue; }
+          if (!device.state.bleUp && p.onSignalLoss === 'hold') { gate.audit(now, 'SKIP', 'BLE_DOWN_HOLD', key); out.push({ code: 'BLE_DOWN_HOLD', substance: it.substance, t: now }); continue; }
+          const lc = gate.limitCheck(it, it.doseUL, now) || gate.deviceCheck(it.doseUL, false);
+          if (lc) { gate.audit(now, 'REJECT', lc, 'plan ' + key); out.push({ code: lc, substance: it.substance, t: now }); continue; }
+          const r = device.deliver(now, it.doseUL, it.rateULmin || 5);
+          if (r.deliveredUL > 0) s.deliveries.push({ t: now, substance: it.substance, commandedUL: it.doseUL, deliveredUL: r.deliveredUL, source: 'plan' });
+          gate.audit(now, r.ok ? 'DELIVER' : 'HALT', r.status, 'plan ' + key + ' meas=' + r.measuredUL);
+          out.push(Object.assign({ code: r.ok ? 'OK' : r.status, substance: it.substance, t: now }, r));
+        }
+      }
+      const cutoff = U.dayKey(now - 3 * U.DAY);
+      const keys = Object.keys(s.done);
+      if (keys.length > 120) keys.forEach(k => { if (k.slice(0, 10) < cutoff) delete s.done[k]; });
+      return out;
+    };
+    return gate;
+  };
+
+  // أدوات للطبيب: بناء وتوقيع الأوامر والخطط
+  S.signPlan = async function (privJwk, plan) { return { plan, sig: await C.sign(privJwk, plan) }; };
+  S.signCmd = async function (privJwk, cmd) { return { cmd, sig: await C.sign(privJwk, cmd) }; };
+  S.nextCmd = function (ctx, o) {
+    // ctx: {keyId, deviceId, patientId, seq, now}
+    return Object.assign({
+      cmdId: 'C' + ctx.seq, keyId: ctx.keyId, deviceId: ctx.deviceId, patientId: ctx.patientId,
+      rateULmin: 5, issuedAt: ctx.now, expiresAt: ctx.now + 10 * U.MIN, seq: ctx.seq,
+      nonce: C.sha256Hex(ctx.keyId + ':' + ctx.seq + ':' + ctx.now).slice(0, 16)
+    }, o);
+  };
+
+  g.OvaSecurity = S;
+  if (typeof module !== 'undefined' && module.exports) module.exports = S;
+})(globalThis);
+</script>
+<script>/* OvaAI — دعم قرار محلي (قواعد + إحصاء). لا يشخّص ولا ينفّذ جرعات: أي اقتراح يحتاج توقيع الطبيب. */
+(function (g) {
+  'use strict';
+  const U = g.OvaUtil, KB = g.OvaKB;
+  const AI = {};
+
+  const glu = (rs, a, b) => rs.filter(r => r.type === 'glucose' && r.t >= a && r.t <= b);
+
+  AI.glucoseStats = function (readings, from, to, range) {
+    range = range || { low: 70, high: 140 };
+    const v = glu(readings, from, to).map(r => r.value);
+    if (!v.length) return { n: 0 };
+    const m = U.mean(v), s = U.sd(v);
+    const below = v.filter(x => x < range.low).length, above = v.filter(x => x > range.high).length;
+    return {
+      n: v.length, mean: U.round(m, 1), sd: U.round(s, 1), cv: U.round(s / m * 100, 1),
+      tirPct: U.round((v.length - below - above) / v.length * 100, 1),
+      belowPct: U.round(below / v.length * 100, 1), abovePct: U.round(above / v.length * 100, 1),
+      min: Math.min.apply(null, v), max: Math.max.apply(null, v)
+    };
+  };
+
+  AI.signalQuality = function (readings, now, hours) {
+    const q = glu(readings, now - (hours || 6) * U.HOUR, now).filter(r => r.q != null).map(r => r.q);
+    return q.length ? U.round(U.mean(q), 2) : null;
+  };
+
+  // متوسط سكر الصيام (05:00–08:00) لكل يوم
+  AI.fastingByDay = function (readings) {
+    const by = {};
+    readings.filter(r => r.type === 'glucose').forEach(r => {
+      const h = U.hour(r.t);
+      if (h >= 5 && h < 8) (by[U.dayKey(r.t)] = by[U.dayKey(r.t)] || []).push(r.value);
+    });
+    return Object.keys(by).sort().map(k => ({ day: k, mean: U.mean(by[k]) }));
+  };
+
+  AI.adherence = function (plan, deliveries, now, days) {
+    if (!plan) return null;
+    days = days || 7;
+    const from = Math.max(now - days * U.DAY, plan.issuedAt);
+    let sched = 0;
+    for (let d = U.dayStart(from); d <= now; d += U.DAY) {
+      for (const it of plan.items) for (const tm of it.times) { const due = d + U.parseHM(tm); if (due > from && due <= now) sched++; }
+    }
+    if (!sched) return null;
+    const done = deliveries.filter(x => x.t > from && x.t <= now && x.deliveredUL > 0).length;
+    return U.clamp(Math.round(done / sched * 100), 0, 100);
+  };
+
+  // ---------- تقدير حاجة التحليل (مع الأسباب) ----------
+  AI.bloodTestNeed = function (c) {
+    const R = [];
+    const add = (code, pts, text) => R.push({ code, pts, text });
+    if (c.quality != null && c.quality < 0.6) add('SIGNAL_POOR', 35, 'جودة إشارة المستشعر منخفضة (' + c.quality + ') — تلزم معايرة بقياس دم مرجعي.');
+    else if (c.quality != null && c.quality < 0.75) add('SIGNAL_DRIFT', 15, 'بدأ انجراف الإشارة (جودة ' + c.quality + ').');
+    const lastLab = c.lastLabT;
+    if (!lastLab || c.now - lastLab > (c.labIntervalDays || 90) * U.DAY) add('LAB_DUE', 25, 'حان موعد التحليل الدوري الذي حدده الطبيب (كل ' + (c.labIntervalDays || 90) + ' يوماً).');
+    if (c.patchAgeDays >= 3 && !c.calibratedThisPatch) add('NO_CALIBRATION', 10, 'الرقعة الحالية لم تُعايَر بقياس دم بعد.');
+    if (c.stats && c.stats.n && c.stats.belowPct > 5) add('LOW_READINGS', 15, 'نسبة قراءات منخفضة مرتفعة (' + c.stats.belowPct + '%) — تُؤكَّد بقياس دم.');
+    if (c.stats && c.stats.n && c.stats.cv > 36) add('HIGH_VARIABILITY', 10, 'تذبذب القراءات مرتفع (CV ' + c.stats.cv + '%).');
+    if (c.fastingHighDays >= 3) add('FASTING_HIGH', 15, 'سكر صائم أعلى من حد الطبيب في ' + c.fastingHighDays + ' أيام حديثة.');
+    if (c.bleedingUrgent) add('BLEEDING_RED_FLAG', 40, 'مؤشرات نزيف تستدعي تقييماً طبياً مباشراً (وليس مجرد تحليل).');
+    R.sort((a, b) => b.pts - a.pts);
+    const score = Math.min(100, R.reduce((s, r) => s + r.pts, 0));
+    const level = score >= 60 ? 'high' : score >= 30 ? 'medium' : 'low';
+    return {
+      score, level, reasons: R,
+      label: { high: 'يُنصح بتحليل دم قريباً', medium: 'تحليل دم قد يكون مفيداً', low: 'لا حاجة لتحليل دم الآن' }[level]
+    };
+  };
+
+  // ---------- مراجعة خطة الجرعات (اقتراحات فقط، ضمن حدود الخطة، بلا تنفيذ) ----------
+  AI.dosePlanReview = function (c) {
+    const out = [];
+    const P = (code, text) => out.push({ code, text, requiresDoctor: true, withinPlan: true, canExecute: false });
+    const alerts = c.deviceAlerts || [];
+    if (alerts.some(a => a.code === 'FLOW_MISMATCH')) P('CHECK_DEVICE', 'توقف التوصيل بسبب عدم تطابق التدفق: يُقترح فحص الجهاز وإبلاغ الطبيب قبل استئناف الجرعات.');
+    if (c.quality != null && c.quality < 0.6) P('CONFIRM_READING', 'يُقترح قياس دم مرجعي ومعايرة المستشعر قبل الاعتماد على القراءات في أي قرار.');
+    if (c.stats && c.stats.n && c.stats.belowPct > 5) P('REVIEW_LOWS', 'رُصدت قراءات منخفضة؛ يُقترح إبلاغ الطبيب لمراجعة توقيت الخطة (ضمن حدودها).');
+    if (c.adherencePct != null && c.adherencePct < 80) P('ADHERENCE', 'نسبة الالتزام ' + c.adherencePct + '% — يُقترح تفعيل تذكيرات إضافية ومراجعة أسباب فوات الجرعات.');
+    if (!out.length) out.push({ code: 'KEEP', text: 'لا اقتراح تعديل: الخطة الحالية مناسبة للقراءات المتاحة ضمن حدودها.', requiresDoctor: false, withinPlan: true, canExecute: false });
+    return out;
+  };
+
+  // ---------- النزيف: PBAC + الأنماط ----------
+  AI.pbacDay = function (e) {
+    const p = e.pads || {}, t = e.tampons || {};
+    return (p.l || 0) * 1 + (p.m || 0) * 5 + (p.s || 0) * 20 + (t.l || 0) * 1 + (t.m || 0) * 5 + (t.s || 0) * 10 +
+      (e.clotsS || 0) * 1 + (e.clotsL || 0) * 5 + (e.flooding ? 5 : 0);
+  };
+  AI.bleedingAnalysis = function (entries, now) {
+    const days = entries.slice().sort((a, b) => a.date < b.date ? -1 : 1);
+    const T = d => U.dayKeyToT(d);
+    const episodes = [];
+    for (const e of days) {
+      const last = episodes[episodes.length - 1];
+      if (last && (T(e.date) - T(last.end)) <= 1 * U.DAY) { last.end = e.date; last.entries.push(e); }
+      else episodes.push({ start: e.date, end: e.date, entries: [e] });
+    }
+    episodes.forEach(ep => {
+      ep.days = Math.round((T(ep.end) - T(ep.start)) / U.DAY) + 1;
+      ep.pbac = ep.entries.reduce((s, e) => s + AI.pbacDay(e), 0);
+      ep.spottingOnly = ep.entries.every(e => e.spotting) && ep.days <= 2;
+      ep.flags = [];
+      ep.entries.forEach(e => {
+        const sat = ((e.pads || {}).s || 0) + ((e.tampons || {}).s || 0);
+        if (sat >= 8 || (e.flooding && sat >= 4)) ep.flags.push('SOAKING');
+        if ((e.clotsL || 0) >= 1) ep.flags.push('LARGE_CLOTS');
+        if (e.dizzy) ep.flags.push('DIZZY');
+      });
+      ep.heavy = ep.pbac > 100;
+      ep.prolonged = ep.days > 8;
+    });
+    const periods = episodes.filter(e => !e.spottingOnly);
+    const cycleLens = [];
+    for (let i = 1; i < periods.length; i++) cycleLens.push(Math.round((T(periods[i].start) - T(periods[i - 1].start)) / U.DAY));
+    const patterns = [];
+    const lastP = periods[periods.length - 1];
+    const urgent = !!(lastP && (lastP.flags.includes('DIZZY') || (lastP.flags.includes('SOAKING') && lastP.flags.includes('LARGE_CLOTS'))));
+    if (lastP) {
+      if (lastP.heavy) patterns.push({ code: 'HEAVY', sev: 'warn', text: 'نزيف غزير بحسب PBAC (' + lastP.pbac + ' > 100) — يُنصح بمراجعة الطبيب.' });
+      if (lastP.prolonged) patterns.push({ code: 'PROLONGED', sev: 'warn', text: 'مدة النزيف ' + lastP.days + ' أيام (أكثر من 8).' });
+      if (lastP.flags.includes('SOAKING')) patterns.push({ code: 'SOAKING', sev: 'warn', text: 'تشبّع شديد بالفوط في يوم واحد.' });
+      if (lastP.flags.includes('LARGE_CLOTS')) patterns.push({ code: 'LARGE_CLOTS', sev: 'warn', text: 'خثرات كبيرة مسجّلة.' });
+      if (lastP.flags.includes('DIZZY')) patterns.push({ code: 'DIZZY', sev: 'danger', text: 'دوخة مع النزيف — تقييم طبي عاجل.' });
+    }
+    if (urgent) patterns.unshift({ code: 'URGENT', sev: 'danger', text: 'مؤشرات خطر: توجهي للطوارئ أو تواصلي مع الطبيب فوراً.' });
+    if (cycleLens.length) {
+      const recent = cycleLens.slice(-3), m = U.mean(recent);
+      if (m > 35) patterns.push({ code: 'LONG_CYCLES', sev: 'info', text: 'متوسط طول الدورة ≈ ' + U.round(m) + ' يوماً (أكثر من 35): نمط دورات متباعدة.' });
+      else if (m < 21) patterns.push({ code: 'SHORT_CYCLES', sev: 'info', text: 'متوسط طول الدورة ≈ ' + U.round(m) + ' يوماً (أقل من 21): دورات متقاربة.' });
+      else patterns.push({ code: 'NORMAL_LEN', sev: 'ok', text: 'متوسط طول الدورة ≈ ' + U.round(m) + ' يوماً (ضمن 21–35).' });
+      if (Math.max.apply(null, recent) - Math.min.apply(null, recent) >= 9) patterns.push({ code: 'VARIABLE', sev: 'info', text: 'تفاوت كبير بين أطوال الدورات (9 أيام أو أكثر).' });
+    }
+    if (lastP && now) {
+      const since = Math.round((now - T(lastP.end)) / U.DAY);
+      if (since > 90) patterns.push({ code: 'NO_PERIOD_90', sev: 'warn', text: 'لا نزيف منذ ' + since + ' يوماً (أكثر من 90): يُنصح بمراجعة الطبيب.' });
+    }
+    if (episodes.some(e => e.spottingOnly)) patterns.push({ code: 'SPOTTING', sev: 'info', text: 'تم تسجيل تبقيع بين الدورات.' });
+    return {
+      episodes: episodes.map(e => ({ start: e.start, end: e.end, days: e.days, pbac: e.pbac, spottingOnly: e.spottingOnly, heavy: e.heavy, flags: Array.from(new Set(e.flags)) })),
+      cycleLens, patterns, urgent,
+      note: 'PBAC تقدير ذاتي وليس قياساً؛ القيمة فوق 100 تقابل غالباً فقداً أكثر من نحو 80 مل. لا يُعد تشخيصاً.'
+    };
+  };
+
+  // ---------- ارتباط الأعراض بالقراءات (سبيرمان) ----------
+  AI.symptomCorrelation = function (symptoms, readings) {
+    const dayMean = (type) => {
+      const by = {};
+      readings.filter(r => r.type === type).forEach(r => (by[U.dayKey(r.t)] = by[U.dayKey(r.t)] || []).push(r.value));
+      const o = {}; Object.keys(by).forEach(k => o[k] = U.mean(by[k])); return o;
+    };
+    const gm = dayMean('glucose'), hm = dayMean('hm1');
+    const names = { acne: 'حب الشباب', hirsutism: 'نمو الشعر الزائد', fatigue: 'الإرهاق', mood: 'تقلب المزاج', cramps: 'ألم الحوض', bloating: 'الانتفاخ', hairloss: 'تساقط الشعر', headache: 'الصداع' };
+    const res = [];
+    const sources = [['متوسط الجلوكوز اليومي', gm], ['المؤشر الهرموني HM1', hm]];
+    for (const [sn, map] of sources) {
+      for (const k of Object.keys(names)) {
+        const xs = [], ys = [];
+        symptoms.forEach(s => { if (map[s.date] != null && s[k] != null) { xs.push(map[s.date]); ys.push(s[k]); } });
+        if (xs.length < 10) { res.push({ a: sn, b: names[k], n: xs.length, rho: null, text: 'بيانات غير كافية (n=' + xs.length + ' < 10).' }); continue; }
+        const rho = U.spearman(xs, ys);
+        if (isNaN(rho)) { res.push({ a: sn, b: names[k], n: xs.length, rho: null, text: 'لا تباين كافٍ للحساب.' }); continue; }
+        const ab = Math.abs(rho);
+        const strength = ab < 0.3 ? 'لا ارتباط واضح' : ab < 0.6 ? 'ارتباط متوسط' : 'ارتباط قوي';
+        res.push({ a: sn, b: names[k], n: xs.length, rho: U.round(rho, 2), strength, text: strength + (ab >= 0.3 ? (rho > 0 ? ' طردي' : ' عكسي') : '') + ' (ρ=' + U.round(rho, 2) + ', n=' + xs.length + ') — الارتباط لا يعني السببية.' });
+      }
+    }
+    return res;
+  };
+
+  // ---------- النظام الغذائي ----------
+  AI.energy = function (p) {
+    const bmr = 10 * p.weightKg + 6.25 * p.heightCm - 5 * p.age - 161;
+    const af = { low: 1.2, moderate: 1.375, high: 1.55 }[p.activity || 'low'];
+    const tdee = bmr * af;
+    const deficit = p.goal === 'lose' ? Math.min(500, tdee * 0.2) : 0;
+    return { bmr: Math.round(bmr), tdee: Math.round(tdee), target: Math.max(1200, Math.round(tdee - deficit)) };
+  };
+  AI.dietPlan = function (p, seed) {
+    const E = AI.energy(p), rng = U.rng(seed || 1);
+    const F = id => KB.FOODS.find(f => f.id === id);
+    const pick = arr => F(arr[Math.floor(rng() * arr.length)]);
+    const slots = [
+      { slot: 'b', label: 'الفطور', items: [{ f: pick(['egg', 'cottage']), q: 1 }, { f: pick(['oats', 'foul', 'wholebread']), q: 1, C: 1 }, { f: pick(['labneh', 'yogurt']), q: 1 }, { f: F('salad'), q: 0.5 }] },
+      { slot: 's1', label: 'وجبة خفيفة', items: [{ f: F('apple'), q: 1, C: 1 }, { f: F('almond'), q: 0.5 }] },
+      { slot: 'l', label: 'الغداء', items: [{ f: pick(['chicken', 'fish', 'lean']), q: 1 }, { f: pick(['lentil', 'chickpea', 'brownrice']), q: 1, C: 1 }, { f: F('salad'), q: 1 }, { f: F('cookedveg'), q: 1 }] },
+      { slot: 's2', label: 'وجبة خفيفة', items: [{ f: pick(['yogurt', 'cottage']), q: 1 }, { f: F('cucumber'), q: 1 }] },
+      { slot: 'd', label: 'العشاء', items: [{ f: pick(['fish', 'chicken']), q: 1 }, { f: pick(['lentil', 'chickpea', 'brownrice']), q: 0.5, C: 1 }, { f: F('salad'), q: 1 }, { f: F('cookedveg'), q: 1 }] }
+    ];
+    const tot = () => slots.reduce((s, m) => s + m.items.reduce((a, i) => a + i.f.kcal * i.q, 0), 0);
+    const carbs = slots.flatMap(m => m.items.filter(i => i.C));
+    let guard = 0;
+    while (tot() < E.target - 90 && guard++ < 40) { const c = carbs.filter(i => i.q < 3).sort((a, b) => a.q - b.q)[0]; if (!c) break; c.q += 0.5; }
+    const others0 = slots.flatMap(m => m.items.filter(i => !i.C));
+    while (tot() < E.target - 90 && guard++ < 80) { const c = others0.filter(i => i.q < 2).sort((a, b) => a.f.kcal * a.q - b.f.kcal * b.q)[0]; if (!c) break; c.q += 0.5; }
+    while (tot() > E.target + 90 && guard++ < 80) { const c = carbs.filter(i => i.q > 0.5).sort((a, b) => b.q - a.q)[0]; if (!c) break; c.q -= 0.5; }
+    // إن بقي المجموع أعلى من الهدف، نخفّض حصص غير الكربوهيدرات الأكبر سعرات (حتى نصف حصة)
+    const others = slots.flatMap(m => m.items.filter(i => !i.C));
+    while (tot() > E.target + 90 && guard++ < 160) { const c = others.filter(i => i.q > 0.5).sort((a, b) => b.f.kcal * b.q - a.f.kcal * a.q)[0]; if (!c) break; c.q -= 0.5; }
+    const sum = (items, k) => U.round(items.reduce((a, i) => a + i.f[k] * i.q, 0), 1);
+    const meals = slots.map(m => {
+      const items = m.items.map(i => ({ id: i.f.id, ar: i.f.ar, serving: i.f.serving, qty: i.q, kcal: Math.round(i.f.kcal * i.q), carb: U.round(i.f.carb * i.q, 1), protein: U.round(i.f.protein * i.q, 1), fiber: U.round(i.f.fiber * i.q, 1), gi: i.f.gi }));
+      return { slot: m.slot, label: m.label, items, kcal: items.reduce((a, i) => a + i.kcal, 0), carb: U.round(items.reduce((a, i) => a + i.carb, 0), 1) };
+    });
+    const flat = meals.flatMap(m => m.items);
+    return {
+      energy: E, meals,
+      totals: { kcal: flat.reduce((a, i) => a + i.kcal, 0), carb: U.round(flat.reduce((a, i) => a + i.carb, 0), 1), protein: U.round(flat.reduce((a, i) => a + i.protein, 0), 1), fiber: U.round(flat.reduce((a, i) => a + i.fiber, 0), 1) },
+      notes: ['قيم الحصص تقريبية.', 'خطة عامة لا تغني عن أخصائية تغذية، وتُعدَّل مع حالات السكري/الكلى/الحمل.', 'الحد الأدنى للطاقة في المقترح 1200 سعر.']
+    };
+  };
+
+  // ---------- المكملات والأعشاب ----------
+  AI.supplementCheck = function (query, ctx) {
+    ctx = ctx || {};
+    const q = U.normAr(query);
+    const entry = KB.SUPPLEMENTS.find(s => s.names.some(n => q.includes(U.normAr(n))));
+    if (!entry) return { found: false, text: 'لا أملك معلومات موثوقة كافية عن «' + query + '». لا أخمّن؛ اسألي الصيدلي أو الطبيب.' };
+    const w = [];
+    const meds = U.normAr(ctx.meds || '');
+    if (entry.flags.includes('pregnancy') && ctx.pregnant) w.push('تُجنَّب أثناء الحمل ما لم يوجّه الطبيب.');
+    if (entry.flags.includes('hypertension') && ctx.hypertension) w.push('قد يرفع الضغط؛ لا يُستخدم مع ارتفاع الضغط دون إذن الطبيب.');
+    if (entry.flags.includes('bleeding') && /وارفارين|مميع|اسبرين|warfarin|clopidogrel|aspirin|كلوبيدوجريل/.test(meds)) w.push('أدويتك المسجلة قد تزيد خطر النزف مع هذا المكمل.');
+    if (entry.flags.includes('interaction') && meds) w.push('لديك أدوية مسجلة: اسألي الصيدلي عن التداخل قبل الاستخدام.');
+    if (entry.flags.includes('needs_lab')) w.push('يُفضَّل قياس المستوى في الدم قبل أي جرعة.');
+    return { found: true, entry, warnings: w, level: w.length ? 'caution' : 'info', text: entry.ar + ': ' + entry.evidence + ' ' + entry.cautions };
+  };
+
+  g.OvaAI = AI;
+  if (typeof module !== 'undefined' && module.exports) module.exports = AI;
+})(globalThis);
+</script>
+<script>/* OvaTwin — توأم رقمي تعليمي لسيناريوهات «ماذا لو؟» (نمط الحياة/الالتزام).
+   - الوزن: نموذج توازن طاقة مبسّط (افتراض: ~22 سعراً لكل كغ لكل يوم، ثابت زمني ~365 يوماً، نطاق ±30% افتراضي).
+   - سكر/إنسولين الصيام: نطاقات مستخرجة من مراجعة Domecq 2013 (برامج نمط الحياة)، تتدرّج خلال ~90 يوماً (افتراض).
+   - لا يتنبأ بالدورة الشهرية ولا بالأعراض كمياً. أثر أي دواء/مكمل يدخله الطبيب كافتراض صريح. */
+(function (g) {
+  'use strict';
+  const U = g.OvaUtil;
+  const T = {};
+  T.PARAMS = {
+    kcalPerKgDay: 22, tauWeightDays: 365, tauMetabolicDays: 90, bandFrac: 0.3,
+    fg: { mid: -2.3, lo: -4.5, hi: -0.1 }, fi: { mid: -2.1, lo: -3.3, hi: -1.0 },
+    METnet: 2.5
+  };
+
+  T.simulate = function (p) {
+    const P = T.PARAMS, step = p.stepDays || 7, H = p.horizonDays || 180;
+    const adh = U.clamp(p.adherence == null ? 1 : p.adherence, 0, 1);
+    const actKcal = (p.activityMinPerWeek || 0) / 7 * 0.0175 * P.METnet * p.weightKg;
+    const eq = ((p.deficitKcal || 0) + actKcal) * adh / P.kcalPerKgDay;
+    const lifestyle = (p.deficitKcal || 0) > 0 || (p.activityMinPerWeek || 0) > 0;
+    const out = { days: [], weight: { mid: [], lo: [], hi: [] }, fg: { mid: [], lo: [], hi: [] }, fi: p.fastingInsulin != null ? { mid: [], lo: [], hi: [] } : null, homa: p.fastingInsulin != null ? [] : null, eqLossKg: U.round(eq, 1), actKcal: Math.round(actKcal) };
+    for (let d = 0; d <= H; d = (d < H && d + step > H) ? H : d + step) {
+      const loss = eq * (1 - Math.exp(-d / P.tauWeightDays));
+      const r = 1 - Math.exp(-d / P.tauMetabolicDays);
+      const ass = (p.fgAssumption || 0) * r;
+      out.days.push(d);
+      out.weight.mid.push(U.round(p.weightKg - loss, 2));
+      out.weight.lo.push(U.round(p.weightKg - loss * (1 + P.bandFrac), 2));
+      out.weight.hi.push(U.round(p.weightKg - loss * (1 - P.bandFrac), 2));
+      const f = lifestyle ? adh * r : 0;
+      out.fg.mid.push(U.round(p.fastingGlucose + P.fg.mid * f + ass, 1));
+      out.fg.lo.push(U.round(p.fastingGlucose + P.fg.lo * f + ass, 1));
+      out.fg.hi.push(U.round(p.fastingGlucose + P.fg.hi * f + ass, 1));
+      if (out.fi) {
+        out.fi.mid.push(U.round(p.fastingInsulin + P.fi.mid * f, 1));
+        out.fi.lo.push(U.round(p.fastingInsulin + P.fi.lo * f, 1));
+        out.fi.hi.push(U.round(p.fastingInsulin + P.fi.hi * f, 1));
+        out.homa.push(U.round((out.fg.mid[out.fg.mid.length - 1] / 18) * out.fi.mid[out.fi.mid.length - 1] / 22.5, 2));
+      }
+    }
+    const last = out.days.length - 1;
+    out.summary = {
+      horizonDays: out.days[last], weightEnd: out.weight.mid[last], weightDelta: U.round(out.weight.mid[last] - p.weightKg, 1),
+      weightBand: [out.weight.lo[last], out.weight.hi[last]], fgEnd: out.fg.mid[last], fgBand: [out.fg.lo[last], out.fg.hi[last]],
+      homaStart: p.fastingInsulin != null ? U.round((p.fastingGlucose / 18) * p.fastingInsulin / 22.5, 2) : null,
+      homaEnd: out.homa ? out.homa[last] : null
+    };
+    out.notes = [
+      'نموذج تعليمي: يعرض نطاقاً محتملاً لا وعداً.',
+      'جودة الدليل في مراجعات نمط الحياة منخفضة (Cochrane) لذا النطاقات واسعة.',
+      'الأعراض الأندروجينية (حب الشباب، الشعر الزائد) قد تتحسن مع نقص الوزن لكن لا نقدّرها كمياً.',
+      'لا يتنبأ بالدورة الشهرية.',
+      (p.fgAssumption ? 'يتضمن افتراضاً أدخله الطبيب لأثر دوائي على سكر الصيام: ' + p.fgAssumption + ' ملغ/دل — ليس تنبؤاً.' : 'لا أثر دوائي مفترض في هذا السيناريو.')
+    ];
+    return out;
+  };
+
+  T.compare = function (base, plan) {
+    const a = T.simulate(Object.assign({}, base, { deficitKcal: 0, activityMinPerWeek: 0, adherence: 1, fgAssumption: 0 }));
+    const b = T.simulate(Object.assign({}, base, plan));
+    return { baseline: a, scenario: b };
+  };
+
+  T.scenarios = function (base) {
+    return [
+      { id: 'current', name: 'استمرار الوضع الحالي', plan: { deficitKcal: 0, activityMinPerWeek: 0, adherence: 1 } },
+      { id: 'diet', name: 'نظام غذائي (عجز 300 سعر، التزام 80%)', plan: { deficitKcal: 300, activityMinPerWeek: 0, adherence: 0.8 } },
+      { id: 'diet_act', name: 'نظام + مشي 150 دقيقة/أسبوع (التزام 80%)', plan: { deficitKcal: 300, activityMinPerWeek: 150, adherence: 0.8 } },
+      { id: 'full', name: 'التزام كامل بالنظام والنشاط', plan: { deficitKcal: 300, activityMinPerWeek: 150, adherence: 1 } }
+    ].map(s => Object.assign({ result: T.simulate(Object.assign({}, base, s.plan)) }, s));
+  };
+
+  // مرجع توضيحي (حالة واحدة منشورة): Shamanna 2025 — −12.4% وزن خلال 360 يوماً (تقريب خطي للرسم فقط)
+  T.shamannaRef = function (w0, days) { return days.map(d => U.round(w0 * (1 - 0.124 * Math.min(1, d / 360)), 2)); };
+
+  g.OvaTwin = T;
+  if (typeof module !== 'undefined' && module.exports) module.exports = T;
+})(globalThis);
+</script>
+<script>/* OvaChat — مساعد محادثة محلي مرتبط ببيانات المريضة (قراءات، جرعات، تحاليل، نزيف، غذاء، توأم رقمي).
+   صريح: ليس نموذج لغة مدرَّباً ولا يرسل بيانات لأي خادم؛ يفهم النوايا بالقواعد ويجيب من سجلها. */
+(function (g) {
+  'use strict';
+  const U = g.OvaUtil, AI = g.OvaAI;
+  const Ch = {};
+  const DISC = '\n\n(معلومات عامة من بياناتك — لا تغني عن الطبيب.)';
+
+  Ch.SUGGESTIONS = ['وش يقرأ الجهاز بالضبط؟', 'كم قراءة السكر الحالية؟', 'متى جرعتي القادمة؟', 'هل أحتاج تحليل دم؟', 'كيف نزيفي؟', 'اقترح لي وجبات اليوم', 'ماذا لو التزمت بالنظام؟', 'هل ميو إينوزيتول مناسب؟', 'هل أزيد الجرعة؟', 'متى نافذة الخصوبة؟', 'متى دورتي القادمة؟'];
+
+  const has = (t, re) => re.test(t);
+  const rng = (n) => n == null ? '—' : n;
+
+  Ch.reply = function (text, c) {
+    const t = U.normAr(text);
+    const R = (intent, body, sources, tone) => ({ intent, text: body, sources: sources || [], tone: tone || 'normal' });
+
+    if (!t) return R('empty', 'اكتبي سؤالك وسأجيبك من بيانات سجلك.');
+
+    if (has(t, /نزيف شديد|نزيف غزير جدا|اغماء|اغمي علي|فقدت الوعي|الم في الصدر|الم صدر|ضيق نفس|ضيق تنفس|انتحار|اذي نفسي|ايذاء نفسي|اقتل نفسي/))
+      return R('emergency', 'هذا يبدو أمراً عاجلاً. من فضلك اتصلي بالإسعاف (997) أو توجهي لأقرب طوارئ الآن، أو تواصلي مع شخص قريب ليكون معك. لست مضطرة لمواجهة هذا وحدك.', [], 'danger');
+
+    if (has(t, /(ازيد|زياده|اضاعف|ضاعف|زود|اعدل|تعديل|اغير|تغيير|جرعه اضافيه|جرعه زياده).{0,25}(جرع|دواء|الدواء|الجرعه)|(جرع|دواء|الجرعه).{0,20}(ازيد|ازود|اضاعف|اعدل|اغير)/))
+      return R('dose_change', 'لا أستطيع تغيير الجرعة ولا يستطيع الذكاء الاصطناعي ذلك. الجهاز لا ينفّذ إلا ما وقّعه طبيبك ضمن الحدود المسجلة (الجرعة الواحدة، السقف اليومي، الفاصل الزمني). إن شعرتِ أن الجرعة غير مناسبة فسجّلي الأعراض وتواصلي مع طبيبك ليراجع الخطة ويوقّع تعديلاً.' +
+        (c.plan ? '\nخطتك الحالية: الإصدار ' + c.plan.version + '.' : ''), ['خطة موقَّعة'], 'warn');
+
+    if (has(t, /(وش|ايش|ماذا|شو|ما) ?(ال)?(ذي )?(يقرا|يقيس|يقراه)|يقرا الجهاز|ما الذي يقيس|وش يقيس/))
+      return R('device_read', 'الجهاز يقيس مباشرة:\n• جلوكوز السائل الخلالي (كل 5 دقائق) — مقدَّر لا يساوي الدم تماماً، ويتأخر نحو 5–10 دقائق.\n• مؤشراً هرمونياً واحداً (HM1، وحدات اعتباطية في النموذج الأولي) يُحدَّد المؤشر الفعلي بعد مرحلة التحقق.\n• حالة الجهاز: التدفق المقاس، مستوى الخزان، البطارية، عمر الرقعة، جودة الإشارة.\n\nما تُدخلينه أنتِ: الوزن، الضغط، الوجبات، الأعراض، النزيف. ما يُدخله الطبيب: التحاليل والخطة الموقَّعة. ما يستنتجه الذكاء الاصطناعي: نسبة الوقت ضمن النطاق، جودة الإشارة، حاجة التحليل، أنماط النزيف، الارتباطات.', ['وصف النظام']);
+
+    if (has(t, /من انت|من تكون|هل انت (بشر|طبيب|ذكاء|chatgpt)|chatgpt|gemini|نموذج لغوي|انت ذكاء/))
+      return R('about', 'أنا مساعد محلي داخل تطبيق OvaSense. لست طبيباً، ولست نموذجاً لغوياً مدرَّباً على بياناتك؛ أفهم أسئلتك بقواعد وأجيب من سجلك المحفوظ على هذا الجهاز فقط، ولا أرسل شيئاً لأي خادم. في الإصدار المستقبلي يمكن ربطي بنموذج لغوي مع ضمانات خصوصية وموافقة.', ['وصف النظام']);
+
+    if (has(t, /اعشاب|عشب|مكمل|فيتامين|اينوزيتول|قرفه|بربرين|نعناع|اوميغا|اوميجا|عرق السوس|سيستين|nac\b|زيت السمك|inositol|omega|berberine/)) {
+      const r = AI.supplementCheck(text, { meds: c.meds, pregnant: c.pregnant, hypertension: c.hypertension });
+      if (!r.found) return R('supplement', r.text, [], 'warn');
+      return R('supplement', r.text + (r.warnings.length ? '\n⚠ ' + r.warnings.join('\n⚠ ') : '') + '\n\nمحتوى تعليمي يحتاج مراجعة الطبيب/الصيدلي قبل أي استخدام.', ['قاعدة المعرفة'], r.warnings.length ? 'warn' : 'normal');
+    }
+
+    if (has(t, /خصوب|اباض|تبويض|الدوره القادمه|دورتي القادمه|موعد الدوره|نافذه/)) {
+      const f = c.fert;
+      if (!f || f.empty) return R('fertility', 'لا توجد بداية دورة مسجّلة بعد. سجّلي أيام النزيف من تبويب «الأعراض والنزيف» أو اضغطي «بدأت دورتي اليوم» في تبويب «الخصوبة والدورة» لأقدّر النافذة.', []);
+      let s = 'اليوم ' + f.dayOfCycle + ' من الدورة. الدورة القادمة المتوقعة بين ' + f.nextStart.lo + ' و' + f.nextStart.hi + '.\nالإباضة المقدّرة نحو ' + f.ovulation.key + ' (' + (f.ovulation.basis === 'LH' ? 'بناءً على اختبار LH إيجابي' : 'بطريقة التقويم') + ')، ونافذة الخصوبة المقدّرة من ' + f.fertile.from + ' إلى ' + f.fertile.to + '.';
+      if (f.irregular) s += '\nدوراتك غير منتظمة (' + f.reasons.join(' ') + ') لذا التقدير تقريبي جداً.';
+      s += '\nهذا تقدير وليس وسيلة لمنع الحمل ولا يؤكد الإباضة؛ اختبار LH يحسّن الدقة، وطبيبك يقرر المتابعة.';
+      return R('fertility', s, ['سجل النزيف', 'Wilcox 2004 [23]', 'إرشاد PCOS 2023 [24]'], f.irregular ? 'warn' : 'normal');
+    }
+
+    if (has(t, /نزيف|دوره|الدوره|حيض|طمث|نزلت|بقع|تبقيع/)) {
+      const b = c.bleeding;
+      if (!b || !b.episodes.length) return R('bleeding', 'لا توجد سجلات نزيف بعد. سجّلي أيام الدورة من تبويب «الأعراض والنزيف» لأحلل النمط.', []);
+      const last = b.episodes.filter(e => !e.spottingOnly).slice(-1)[0];
+      let s = 'آخر دورة: بدأت ' + last.start + ' ومدتها ' + last.days + ' أيام، ودرجة PBAC = ' + last.pbac + (last.heavy ? ' (فوق 100: غزير)' : '') + '.\n';
+      s += b.patterns.map(p => '• ' + p.text).join('\n');
+      s += '\n' + b.note;
+      return R('bleeding', s, ['سجل النزيف'], b.urgent ? 'danger' : (b.patterns.some(p => p.sev === 'warn') ? 'warn' : 'normal'));
+    }
+
+    if (has(t, /تحليل|فحص دم|اسحب دم|ابره|ابر|احتاج دم/)) {
+      const bn = c.bloodNeed;
+      if (!bn) return R('blood', 'لا تتوفر بيانات كافية لتقدير الحاجة.', []);
+      return R('blood', bn.label + ' (درجة ' + bn.score + '/100).' + (bn.reasons.length ? '\nالأسباب:\n' + bn.reasons.map(r => '• ' + r.text).join('\n') : '') + DISC, ['قراءاتك', 'تاريخ آخر تحليل'], bn.level === 'high' ? 'warn' : 'normal');
+    }
+
+    if (has(t, /جرع|دوائي|علاجي|الدواء|موعد/)) {
+      const nd = c.nextDose;
+      let s = nd ? 'جرعتك القادمة: ' + nd.substance + ' — ' + nd.doseUL + ' µL عند ' + nd.when + '.' : 'لا توجد جرعة مجدولة قادمة (لا خطة نشطة أو لا مواعيد متبقية اليوم).';
+      if (c.adherencePct != null) s += '\nالتزامك خلال 7 أيام: ' + c.adherencePct + '%.';
+      if (c.deliveredTodayUL != null) s += '\nالمُوصَّل اليوم: ' + U.round(c.deliveredTodayUL, 1) + ' µL.';
+      return R('dose', s + '\nالجهاز لا ينفّذ إلا الخطة الموقَّعة من الطبيب ضمن حدودها.', ['الخطة الموقَّعة', 'سجل الجهاز']);
+    }
+
+    if (has(t, /سكر|جلوكوز|قراءه|قراءاتي|قراءات|نطاق|tir|المستوي|متوسط/)) {
+      const g1 = c.latestGlucose, s7 = c.stats7;
+      if (!g1) return R('glucose', 'لا توجد قراءة حديثة. تأكدي أن الرقعة مركّبة والجهاز متصل.', []);
+      let s = 'آخر قراءة: ' + g1.value + ' ملغ/دل عند ' + g1.when + (g1.q != null ? ' (جودة الإشارة ' + g1.q + ')' : '') + '.';
+      if (s7 && s7.n) s += '\nآخر 7 أيام: المتوسط ' + s7.mean + '، الوقت ضمن النطاق ' + s7.tirPct + '%، فوق النطاق ' + s7.abovePct + '%، تحت النطاق ' + s7.belowPct + '%.';
+      if (c.quality != null && c.quality < 0.6) s += '\n⚠ جودة الإشارة منخفضة؛ يُفضَّل قياس دم مرجعي.';
+      s += '\nهذه قراءة سائل خلالي مقدَّرة وليست قياس دم مباشراً.';
+      return R('glucose', s + DISC, ['قراءات الجهاز'], (g1.value < 70 || g1.value > 180) ? 'warn' : 'normal');
+    }
+
+    if (has(t, /اكل|اكلي|غذاء|غذايي|وجبه|وجبات|رجيم|نظام غذايي|نظام غذائي|اتغدي|افطر|عشاء|غداء|فطور/)) {
+      const d = c.diet;
+      if (!d) return R('diet', 'سجّلي الطول والوزن لأقترح خطة.', []);
+      return R('diet', 'الطاقة المقترحة ≈ ' + d.energy.target + ' سعراً/يوم.\n' + d.meals.map(m => '• ' + m.label + ': ' + m.items.map(i => i.ar + (i.qty !== 1 ? ' ×' + i.qty : '')).join('، ')).join('\n') + '\nالمجموع ≈ ' + d.totals.kcal + ' سعراً، ألياف ' + d.totals.fiber + ' جم.\nقيم تقريبية؛ راجعيها مع أخصائية تغذية.', ['ملفك الشخصي', 'جدول الأغذية']);
+    }
+
+    if (has(t, /توام|ماذا لو|لو التزمت|لو خسرت|لو نقص|لو مشيت|محاكاه/)) {
+      const tw = c.twin;
+      if (!tw) return R('twin', 'افتحي تبويب «التوأم الرقمي» لتجربي سيناريوهات «ماذا لو».', []);
+      return R('twin', 'في سيناريو «' + tw.name + '» خلال ' + tw.horizonDays + ' يوماً: الوزن المتوقع ≈ ' + tw.weightEnd + ' كغ (نطاق ' + tw.weightBand[0] + '–' + tw.weightBand[1] + ') وسكر الصيام ≈ ' + tw.fgEnd + ' ملغ/دل (نطاق ' + tw.fgBand[0] + '–' + tw.fgBand[1] + ').\nالتغيرات في السكر صغيرة لأن الدليل المنشور يُظهر أثراً متواضعاً؛ ولا أتنبأ بدورتك الشهرية.', ['التوأم الرقمي', 'Domecq 2013']);
+    }
+
+    if (has(t, /بطاريه|رقعه|الباتش|خزان|الجهاز|عطل|تنبيه|تنبيهات|حاله/)) {
+      const a = c.alerts || [];
+      return R('device', a.length ? 'تنبيهات الجهاز:\n' + a.map(x => '• ' + x.text).join('\n') : 'الجهاز يعمل بشكل طبيعي. ' + (c.deviceBrief || ''), ['حالة الجهاز'], a.some(x => x.lvl === 'danger') ? 'danger' : a.length ? 'warn' : 'normal');
+    }
+
+    if (has(t, /اعراض|حب شباب|شعر زايد|ارهاق|تعب|مزاج|الم/)) {
+      const cor = (c.corr || []).filter(x => x.rho != null && Math.abs(x.rho) >= 0.3);
+      if (!cor.length) return R('symptom', 'لا يوجد ارتباط واضح بين أعراضك وقراءاتك حتى الآن (أو البيانات غير كافية). واصلي التسجيل اليومي؛ نحتاج 10 أيام على الأقل.', ['يوميات الأعراض']);
+      return R('symptom', 'أبرز الارتباطات:\n' + cor.map(x => '• ' + x.a + ' ↔ ' + x.b + ': ' + x.text).join('\n'), ['يوميات الأعراض', 'قراءات الجهاز']);
+    }
+
+    if (has(t, /مرحبا|السلام|اهلا|هلا|صباح|مساء/))
+      return R('greet', 'أهلاً ' + (c.name || '') + '! اسأليني عن قراءاتك، جرعاتك، حاجتك لتحليل، نزيفك، غذائك، أو «ماذا لو».');
+    if (has(t, /شكرا|مشكور|يعطيك/)) return R('thanks', 'العفو! أنا هنا متى احتجتِ.');
+
+    return R('fallback', 'لم أفهم سؤالك تماماً. جرّبي مثلاً:\n' + Ch.SUGGESTIONS.slice(0, 5).map(s => '• ' + s).join('\n'));
+  };
+
+  g.OvaChat = Ch;
+  if (typeof module !== 'undefined' && module.exports) module.exports = Ch;
+})(globalThis);
+</script>
+<script>/* OvaFertility — تقدير الدورة ونافذة الخصوبة بطريقة التقويم + اختبار LH.
+   تقدير فقط: ليس وسيلة لمنع الحمل ولا تشخيصاً. في المتلازمة تكون الدورات غير منتظمة فتتّسع حدود عدم اليقين. */
+(function (g) {
+  'use strict';
+  const U = g.OvaUtil, D = U.DAY;
+  const F = {};
+  const T = k => U.dayKeyToT(k);
+  const diff = (a, b) => Math.round((T(b) - T(a)) / D);
+  const add = (k, n) => U.dayKey(T(k) + n * D + 12 * U.HOUR - 12 * U.HOUR);
+  F.add = add; F.diff = diff;
+
+  // starts: مفاتيح أيام بدايات الدورات (مرتبة أو لا)، logs: [{date, lh:'pos'|'neg'|'', mucus}]
+  F.analyze = function (starts, logs, nowT, o) {
+    o = o || {};
+    const today = U.dayKey(nowT);
+    const S = Array.from(new Set(starts.filter(k => k <= today))).sort();
+    const lens = []; for (let i = 1; i < S.length; i++) lens.push(diff(S[i - 1], S[i]));
+    const recent = lens.slice(-6), n = recent.length;
+    const mean = n ? recent.reduce((a, b) => a + b, 0) / n : null;
+    const sd = n >= 2 ? Math.sqrt(recent.reduce((a, b) => a + (b - mean) * (b - mean), 0) / (n - 1)) : null;
+    const res = { today, starts: S, lens: recent, n, mean: mean == null ? null : Math.round(mean * 10) / 10, sd: sd == null ? null : Math.round(sd * 10) / 10 };
+    if (!S.length) { res.empty = true; return res; }
+    const last = S[S.length - 1];
+    res.lastStart = last; res.dayOfCycle = diff(last, today) + 1; res.daysSinceLast = diff(last, today);
+    // عدم الانتظام (إرشاد 2023: <21 أو >35 يوماً، أو دورة >90 يوماً)
+    const reasons = [];
+    if (mean != null && mean > 35) reasons.push('متوسط طول الدورة ' + res.mean + ' يوماً (أكثر من 35).');
+    if (mean != null && mean < 21) reasons.push('متوسط طول الدورة ' + res.mean + ' يوماً (أقل من 21).');
+    if (recent.some(x => x > 90)) reasons.push('وُجدت دورة تجاوزت 90 يوماً.');
+    if (sd != null && sd > 7) reasons.push('تباين كبير بين الدورات (الانحراف المعياري ' + res.sd + ' أيام).');
+    res.irregular = reasons.length > 0; res.reasons = reasons;
+    res.longGap = res.daysSinceLast > 90;
+    res.insufficient = n < 2;
+    res.confidence = (res.irregular || res.insufficient) ? 'low' : 'medium';
+    const base = mean != null ? Math.round(mean) : (o.defaultLen || 28);
+    const hw = Math.max(3, Math.round(sd != null ? sd : 5));
+    res.nextStart = { key: add(last, base), lo: add(last, base - hw), hi: add(last, base + hw), hw };
+    res.late = today > res.nextStart.hi;
+    // الإباضة: LH موجب في الدورة الحالية يُرجِّح التاريخ؛ وإلا تقويم (بداية القادمة − 14)
+    const lhPos = (logs || []).filter(l => l.lh === 'pos' && l.date >= last && l.date <= today).map(l => l.date).sort();
+    let ov;
+    if (lhPos.length) { const d0 = lhPos[lhPos.length - 1]; ov = { key: add(d0, 1), lo: add(d0, 1), hi: add(d0, 2), basis: 'LH', lhDate: d0 }; }
+    else { const w = Math.round(Math.sqrt(hw * hw + 4)); ov = { key: add(res.nextStart.key, -14), lo: add(res.nextStart.key, -14 - w), hi: add(res.nextStart.key, -14 + w), basis: 'calendar' }; }
+    res.ovulation = ov;
+    res.fertile = { from: add(ov.key, -5), to: ov.key, broadFrom: add(ov.lo, -5), broadTo: ov.hi };
+    // الطور اليوم
+    let phase;
+    if (res.dayOfCycle <= 5) phase = 'menses';
+    else if (today >= res.fertile.from && today <= res.fertile.to) phase = 'fertile';
+    else if (today < res.fertile.from) phase = 'follicular';
+    else if (today <= res.nextStart.hi) phase = 'luteal';
+    else phase = 'late';
+    res.phase = phase;
+    res.lhPositiveRecent = lhPos.length > 0;
+    return res;
+  };
+  F.PHASE_AR = { menses: 'أيام الدورة', follicular: 'الطور الجريبي (قبل النافذة)', fertile: 'نافذة الخصوبة المقدّرة', luteal: 'بعد الإباضة المقدّرة', late: 'متأخرة عن المتوقع' };
+
+  // شريط تقويم: كل يوم من بداية الدورة الحالية
+  F.calendar = function (a, bleedDays) {
+    if (a.empty) return [];
+    const L = Math.max(Math.round(a.mean || 28) + 8, 36), out = [], bd = new Set(bleedDays || []);
+    for (let i = 0; i < L; i++) {
+      const k = add(a.lastStart, i), cls = [];
+      if (bd.has(k)) cls.push('bl');
+      if (k >= a.fertile.from && k <= a.fertile.to) cls.push('fr');
+      if (k === a.ovulation.key) cls.push('ov');
+      if (k >= a.nextStart.lo && k <= a.nextStart.hi) cls.push('np');
+      if (k === a.today) cls.push('td');
+      out.push({ key: k, day: i + 1, cls: cls.join(' ') });
+    }
+    return out;
+  };
+  g.OvaFertility = F;
+  if (typeof module !== 'undefined' && module.exports) module.exports = F;
+})(globalThis);
+</script>
+<script>/* OvaEngine — حالة التطبيق، تقدّم الزمن المحاكى، بيانات العرض التجريبي، والسياق للمساعد */
+(function (g) {
+  'use strict';
+  const F = g.OvaFertility, U = g.OvaUtil, C = g.OvaCrypto, D = g.OvaDevice, SEC = g.OvaSecurity, AI = g.OvaAI, TW = g.OvaTwin;
+  const E = {};
+  const STEP = 5 * U.MIN;
+  E.SUBSTANCE = 'مادة أ (يحدد الطبيب)';
+
+  E.newState = function (now) {
+    return {
+      v: 1, demo: false,
+      clock: { now, lastT: now, scale: 60, running: false },
+      patient: { id: 'PT-DEMO-01', name: 'مريضة تجريبية', age: 27, heightCm: 162, weightKg: 78, activity: 'low', goal: 'lose', pregnant: false, hypertension: false, meds: '' },
+      doctor: null, labs: { lastLabT: null, fastingInsulin: null, hba1c: null, labIntervalDays: 90 },
+      range: { low: 70, high: 140 }, fastingThreshold: 100,
+      readings: [], meals: [], symptoms: [], bleeding: [], events: [],
+      device: D.newState(20260), gate: SEC.newState('OVA-POD-0001', 'PT-DEMO-01'),
+      seq: 0, lastEnv: null, chat: [], twin: { scenario: 'diet_act', horizon: 180, deficit: 300, act: 150, adh: 80, fgAssumption: 0 },
+      proposals: [], fertility: [], onboarded: false, doctorNote: null, role: 'patient'
+    };
+  };
+
+  E.attach = function (S) {
+    if (!S.fertility) S.fertility = []; if (S.onboarded === undefined) S.onboarded = true; if (S.doctorNote === undefined) S.doctorNote = null;
+    const device = D.create(S.device, () => S.meals);
+    const gate = SEC.createGate(device, S.gate);
+    return { S, device, gate };
+  };
+
+  E.advance = function (env, toT) {
+    const { S, device, gate } = env;
+    let t = S.clock.lastT;
+    while (t + STEP <= toT) {
+      t += STEP;
+      device.tick(5);
+      const sg = device.senseGlucose(t);
+      if (sg) S.readings.push({ t, type: 'glucose', value: sg.value, q: sg.q, src: 'device' });
+      if (Math.round(t / STEP) % 12 === 0) { const h = device.senseHM1(t); if (h != null) S.readings.push({ t, type: 'hm1', value: h, src: 'device' }); }
+      gate.runSchedule(t);
+    }
+    S.clock.lastT = t; S.clock.now = Math.max(toT, S.clock.now);
+    const cut = toT - 30 * U.DAY;
+    if (S.readings.length && S.readings[0].t < cut) S.readings = S.readings.filter(r => r.t >= cut);
+  };
+
+  // ---- أفعال المستخدمة ----
+  E.addReading = function (env, type, value, o) {
+    const { S, device } = env, now = S.clock.now;
+    o = o || {};
+    const r = Object.assign({ t: now, type, value: Number(value), src: 'manual' }, o);
+    S.readings.push(r);
+    if (type === 'lab_glucose') { const ok = device.calibrate(now, Number(value)); env.gate.audit(now, 'CALIB', ok ? 'OK' : 'NO_PATCH', 'ref=' + value); }
+    return r;
+  };
+  E.addMeal = (env, name, carbs) => { env.S.meals.push({ t: env.S.clock.now, name, carbs: Number(carbs) }); env.S.meals.sort((a, b) => a.t - b.t); };
+
+  // ---- الطبيب ----
+  E.nextPlanVersion = env => (env.gate.s.plan ? env.gate.s.plan.version : 0) + 1;
+  E.buildPlan = function (env, spec, now) {
+    const S = env.S;
+    return {
+      planId: 'PLAN-' + E.nextPlanVersion(env), version: E.nextPlanVersion(env), keyId: S.doctor.keyId,
+      patientId: S.patient.id, deviceId: S.device.deviceId, issuedAt: spec.issuedAt || now, expiresAt: spec.expiresAt || now + 30 * U.DAY,
+      onSignalLoss: spec.onSignalLoss || 'continue_plan',
+      items: [{ substance: spec.substance || E.SUBSTANCE, doseUL: spec.doseUL, rateULmin: spec.rateULmin || 5, times: spec.times, singleMaxUL: spec.singleMaxUL, dailyCapUL: spec.dailyCapUL, minIntervalMin: spec.minIntervalMin }]
+    };
+  };
+  E.signAndInstallPlan = async function (env, spec, now) {
+    const plan = E.buildPlan(env, spec, now);
+    const env_ = await SEC.signPlan(env.S.doctor.privateJwk, plan);
+    return env.gate.installPlan(env_, now);
+  };
+  E.issueCommand = async function (env, o, now, keyOverride) {
+    const S = env.S, key = keyOverride || S.doctor;
+    S.seq += 1;
+    const cmd = SEC.nextCmd({ keyId: key.keyId, deviceId: S.device.deviceId, patientId: S.patient.id, seq: S.seq, now }, Object.assign({ substance: E.SUBSTANCE }, o));
+    return SEC.signCmd(key.privateJwk, cmd);
+  };
+  E.sendCommand = async function (env, o, now) {
+    const e = await E.issueCommand(env, o, now);
+    const r = await env.gate.execute(e, now);
+    if (r.ok !== false || r.code === 'HALTED_FLOW_MISMATCH' || r.status) env.S.lastEnv = e;
+    return r;
+  };
+  E.provisionDoctor = async function (env, now) {
+    const kp = await C.generateKeyPair();
+    env.S.doctor = { name: 'د. ريم (طبيبة افتراضية)', keyId: kp.keyId, publicJwk: kp.publicJwk, privateJwk: kp.privateJwk };
+    env.gate.provisionKey(kp.keyId, kp.publicJwk, now);
+  };
+
+  // ---- مختبر الأمان: كل هجوم يُرجع {name, expected, got, pass} ----
+  E.attacks = [
+    { id: 'replay', name: 'إعادة إرسال أمر قديم', expected: ['REPLAY_NONCE'] },
+    { id: 'tamper', name: 'تعديل الجرعة بعد التوقيع', expected: ['BAD_SIGNATURE'] },
+    { id: 'expired', name: 'أمر منتهي الصلاحية', expected: ['EXPIRED'] },
+    { id: 'revoked', name: 'مفتاح طبيب مُلغى', expected: ['KEY_REVOKED'] },
+    { id: 'unknown', name: 'مفتاح غير معروف للجهاز', expected: ['UNKNOWN_KEY'] },
+    { id: 'overdose', name: 'جرعة فوق الحد الأقصى للجرعة الواحدة', expected: ['DOSE_OVER_SINGLE_MAX'] },
+    { id: 'limit', name: 'جرعة خارج السقف اليومي/الفاصل الزمني', expected: ['DAILY_CAP_EXCEEDED', 'MIN_INTERVAL'] },
+    { id: 'ai', name: 'أمر من الذكاء الاصطناعي بلا توقيع', expected: ['UNSIGNED'] },
+    { id: 'wrongdev', name: 'أمر موقَّع لجهاز آخر', expected: ['WRONG_DEVICE'] },
+    { id: 'rollback', name: 'خطة بإصدار أقدم (رجوع للخلف)', expected: ['PLAN_ROLLBACK'] },
+    { id: 'audit', name: 'العبث بسجل التدقيق', expected: ['CHAIN_BROKEN'] }
+  ];
+  E.runAttack = async function (env, id, now) {
+    const { S, gate } = env;
+    const def = E.attacks.find(a => a.id === id);
+    let r;
+    const fresh = async (o, t) => E.issueCommand(env, Object.assign({ doseUL: 10 }, o), t || now);
+    if (id === 'replay') {
+      // أمر صالح أولاً ثم إعادته حرفياً
+      const e = await fresh({ doseUL: 5 });
+      await gate.execute(e, now);
+      r = await gate.execute(e, now + U.MIN);
+    } else if (id === 'tamper') {
+      const e = await fresh({ doseUL: 10 }); e.cmd = Object.assign({}, e.cmd, { doseUL: 45 });
+      r = await gate.execute(e, now);
+    } else if (id === 'expired') {
+      const e = await fresh({ issuedAt: now - 20 * U.MIN, expiresAt: now - 10 * U.MIN });
+      r = await gate.execute(e, now);
+    } else if (id === 'revoked') {
+      const kp = await C.generateKeyPair(); const ks = { keyId: kp.keyId, privateJwk: kp.privateJwk };
+      gate.provisionKey(kp.keyId, kp.publicJwk, now); gate.revokeKey(kp.keyId, now);
+      r = await gate.execute(await E.issueCommand(env, { doseUL: 10 }, now, ks), now);
+    } else if (id === 'unknown') {
+      const kp = await C.generateKeyPair();
+      r = await gate.execute(await E.issueCommand(env, { doseUL: 10 }, now, { keyId: kp.keyId, privateJwk: kp.privateJwk }), now);
+    } else if (id === 'overdose') {
+      r = await gate.execute(await fresh({ doseUL: 45 }), now);
+    } else if (id === 'limit') {
+      const item = S.gate.plan && S.gate.plan.items[0];
+      const room = item ? item.dailyCapUL - gate.deliveredToday(item.substance, now) : 0;
+      // جرعة ضمن الحد الواحد لكنها تتجاوز المتبقي أو تخالف الفاصل
+      r = await gate.execute(await fresh({ doseUL: item ? Math.min(item.singleMaxUL, Math.max(item.singleMaxUL, room + 1)) : 10 }), now);
+    } else if (id === 'ai') {
+      r = await gate.execute({ cmd: { cmdId: 'AI-1', keyId: 'ai-engine', substance: E.SUBSTANCE, doseUL: 10 }, sig: null }, now);
+    } else if (id === 'wrongdev') {
+      const e = await SEC.signCmd(S.doctor.privateJwk, SEC.nextCmd({ keyId: S.doctor.keyId, deviceId: 'OVA-POD-9999', patientId: S.patient.id, seq: ++S.seq, now }, { substance: E.SUBSTANCE, doseUL: 10 }));
+      r = await gate.execute(e, now);
+    } else if (id === 'rollback') {
+      const cur = S.gate.plan; const old = Object.assign({}, cur, { version: cur.version, planId: 'OLD' });
+      r = await gate.installPlan(await SEC.signPlan(S.doctor.privateJwk, old), now);
+    } else if (id === 'audit') {
+      const clone = JSON.parse(JSON.stringify(S.gate.audit));
+      if (clone.length > 3) clone[Math.floor(clone.length / 2)].detail = 'تم العبث';
+      const v = SEC.verifyChain(clone);
+      r = { ok: false, code: v.ok ? 'CHAIN_OK' : 'CHAIN_BROKEN', label: v.ok ? 'السلسلة سليمة' : 'اكتشاف العبث عند السجل #' + v.brokenAt, brokenAt: v.brokenAt };
+    }
+    const got = r.ok === false || r.code ? (r.code || r.status) : 'ACCEPTED';
+    return { id, name: def.name, expected: def.expected, got, label: r.label || '', pass: def.expected.includes(got) };
+  };
+
+  // ---- أدوات مشتقة ----
+  E.nextDose = function (plan, now) {
+    if (!plan || now > plan.expiresAt) return null;
+    let best = null;
+    for (let d = 0; d < 2; d++) {
+      const base = U.dayStart(now) + d * U.DAY;
+      for (const it of plan.items) for (const tm of it.times) {
+        const due = base + U.parseHM(tm);
+        if (due > now && (!best || due < best.t)) best = { t: due, substance: it.substance, doseUL: it.doseUL, when: U.fmtDT(due) };
+      }
+    }
+    return best;
+  };
+  E.latest = (S, type) => { for (let i = S.readings.length - 1; i >= 0; i--) if (S.readings[i].type === type) return S.readings[i]; return null; };
+
+  E.derive = function (env, now) {
+    const { S, device, gate } = env;
+    now = now || S.clock.now;
+    const plan = gate.s.plan;
+    const stats7 = AI.glucoseStats(S.readings, now - 7 * U.DAY, now, S.range);
+    const stats1 = AI.glucoseStats(S.readings, now - U.DAY, now, S.range);
+    const quality = AI.signalQuality(S.readings, now, 6);
+    const bleeding = AI.bleedingAnalysis(S.bleeding, now);
+    const fastDays = AI.fastingByDay(S.readings.filter(r => r.t > now - 7 * U.DAY));
+    const fastingHighDays = fastDays.filter(f => f.mean > S.fastingThreshold).length;
+    const age = device.ageDays(now);
+    const calibratedThisPatch = !!(S.device.calib && S.device.patchAppliedAt && S.device.calib.t >= S.device.patchAppliedAt);
+    const bloodNeed = AI.bloodTestNeed({ now, lastLabT: S.labs.lastLabT, labIntervalDays: S.labs.labIntervalDays, patchAgeDays: age, calibratedThisPatch, quality, stats: stats7, fastingHighDays, bleedingUrgent: bleeding.urgent });
+    const alerts = device.alerts(now);
+    const adherencePct = AI.adherence(plan, gate.s.deliveries, now, 7);
+    const lg = E.latest(S, 'glucose');
+    const wRead = E.latest(S, 'weight');
+    const weight = wRead ? wRead.value : S.patient.weightKg;
+    const fgBase = fastDays.length ? U.round(U.mean(fastDays.map(f => f.mean)), 1) : 95;
+    const twinBase = { weightKg: weight, heightCm: S.patient.heightCm, fastingGlucose: fgBase, fastingInsulin: S.labs.fastingInsulin, horizonDays: S.twin.horizon };
+    const tw = S.twin;
+    const twinRes = TW.simulate(Object.assign({}, twinBase, { deficitKcal: tw.deficit, activityMinPerWeek: tw.act, adherence: tw.adh / 100, fgAssumption: tw.fgAssumption }));
+    const corr = AI.symptomCorrelation(S.symptoms, S.readings);
+    const diet = AI.dietPlan({ weightKg: weight, heightCm: S.patient.heightCm, age: S.patient.age, activity: S.patient.activity, goal: S.patient.goal }, Math.floor(now / U.DAY));
+    const starts = bleeding.episodes.filter(e => !e.spottingOnly).map(e => e.start);
+    const fert = F.analyze(starts, S.fertility, now);
+    const hM = S.patient.heightCm / 100, bmiV = hM > 0 ? weight / (hM * hM) : null;
+    const bmi = bmiV == null ? null : { v: U.round(bmiV, 1), cat: bmiV < 18.5 ? 'نحافة' : bmiV < 25 ? 'وزن طبيعي' : bmiV < 30 ? 'زيادة وزن' : 'سمنة' };
+    const review = AI.dosePlanReview({ plan, stats: stats7, quality, adherencePct, deviceAlerts: alerts });
+    return {
+      name: S.patient.name, now, fert, bmi, doctorNote: S.doctorNote, plan, stats7, stats1, quality, bleeding, fastingHighDays, bloodNeed, alerts, adherencePct, corr, diet, review, weight, twinBase, twinRes,
+      latestGlucose: lg ? { value: lg.value, q: lg.q, when: U.hhmm(lg.t) } : null,
+      latestHM1: E.latest(S, 'hm1'), nextDose: E.nextDose(plan, now),
+      deliveredTodayUL: plan ? gate.deliveredToday(plan.items[0].substance, now) : null,
+      deviceBrief: 'البطارية ' + U.round(S.device.batteryPct) + '%، الخزان ' + U.round(S.device.reservoirUL) + ' µL.',
+      twin: { name: 'نظام + نشاط', horizonDays: twinRes.summary.horizonDays, weightEnd: twinRes.summary.weightEnd, weightBand: twinRes.summary.weightBand, fgEnd: twinRes.summary.fgEnd, fgBand: twinRes.summary.fgBand },
+      meds: S.patient.meds, pregnant: S.patient.pregnant, hypertension: S.patient.hypertension
+    };
+  };
+
+  // ---- بيانات العرض التجريبي (تركيبية) ----
+  E.seedDemo = async function (now) {
+    const S = E.newState(0), env = E.attach(S);
+    const today = U.dayStart(now), start = today - 14 * U.DAY;
+    S.clock.now = start; S.clock.lastT = start; S.demo = true;
+    const rng = U.rng(77);
+    // وجبات
+    const dayCarbs = {};
+    for (let d = 0; d <= 14; d++) {
+      const ds = start + d * U.DAY;
+      const add = (h, name, c) => { const t = ds + h * U.HOUR + Math.floor(rng() * 20) * U.MIN; if (t <= now) { S.meals.push({ t, name, carbs: c }); dayCarbs[U.dayKey(ds)] = (dayCarbs[U.dayKey(ds)] || 0) + c; } };
+      add(8, 'فطور', 35 + Math.round(rng() * 25));
+      add(13.5, 'غداء', 55 + Math.round(rng() * 35));
+      add(20, 'عشاء', 40 + Math.round(rng() * 30));
+      if (rng() < 0.5) add(16.5, 'وجبة خفيفة', 20 + Math.round(rng() * 25));
+    }
+    S.meals.sort((a, b) => a.t - b.t);
+    await E.provisionDoctor(env, start);
+    const spec = { issuedAt: start - U.HOUR, expiresAt: now + 60 * U.DAY, doseUL: 25, times: ['07:00', '12:00', '17:00', '22:00'], singleMaxUL: 30, dailyCapUL: 110, minIntervalMin: 180 };
+    const pr = await E.signAndInstallPlan(env, spec, start);
+    if (!pr.ok) throw new Error('plan install failed ' + pr.code);
+    // الرقعة 1 (يوم 0) والرقعة 2 (يوم 7)
+    E.advance(env, start + 6.5 * U.HOUR); env.device.applyPatch(start + 6.5 * U.HOUR);
+    E.advance(env, start + 3 * U.DAY + 8 * U.HOUR);
+    E.addReading(env, 'lab_glucose', 92); // معايرة بقياس دم
+    E.advance(env, start + 7 * U.DAY + 6.5 * U.HOUR); env.device.applyPatch(start + 7 * U.DAY + 6.5 * U.HOUR);
+    gate_note(env, start + 7 * U.DAY + 6.5 * U.HOUR);
+    E.advance(env, now);
+    // أعراض يومية (ترتبط جزئياً بكربوهيدرات اليوم — بيانات تركيبية)
+    for (let d = 0; d < 14; d++) {
+      const k = U.dayKey(start + d * U.DAY), c = dayCarbs[k] || 120;
+      const sc = (base) => U.clamp(Math.round(base + (c - 140) / 70 + (rng() - 0.5) * 1.6), 0, 3);
+      S.symptoms.push({ date: k, acne: sc(1), hirsutism: U.clamp(Math.round(1 + (rng() - 0.5) * 1.2), 0, 3), fatigue: sc(1), mood: sc(1), cramps: U.clamp(Math.round(rng() * 1.5), 0, 3) });
+    }
+    // نزيف: دورتان (طول الدورة 39 يوماً)
+    const bd = (offset, o) => S.bleeding.push(Object.assign({ date: U.dayKey(today + offset * U.DAY) }, o));
+    const ep = (startOff, plan) => plan.forEach((o, i) => bd(startOff + i, o));
+    ep(-54, [{ pads: { m: 3 } }, { pads: { m: 4, s: 1 }, clotsS: 1 }, { pads: { m: 3 } }, { pads: { l: 3 } }, { pads: { l: 2 } }]);
+    ep(-15, [{ pads: { m: 3 } }, { pads: { m: 3, s: 1 } }, { pads: { m: 2, l: 2 } }, { pads: { l: 3 } }, { pads: { l: 2 } }, { spotting: true, pads: { l: 1 } }]);
+    // وزن ومعطيات مخبرية
+    S.readings.push({ t: start + 2 * U.HOUR, type: 'weight', value: 78.4, src: 'manual' }, { t: start + 7 * U.DAY + 2 * U.HOUR, type: 'weight', value: 78.1, src: 'manual' }, { t: today + 2 * U.HOUR <= now ? today + 2 * U.HOUR : now - U.HOUR, type: 'weight', value: 77.8, src: 'manual' });
+    S.labs = { lastLabT: now - 100 * U.DAY, fastingInsulin: 14, hba1c: 5.6, labIntervalDays: 90 };
+    S.clock.now = now; S.onboarded = false;
+    return env;
+  };
+  function gate_note(env, t) { env.gate.audit(t, 'DEVICE', 'PATCH_APPLIED', 'رقعة جديدة'); }
+
+  g.OvaEngine = E;
+  if (typeof module !== 'undefined' && module.exports) module.exports = E;
+})(globalThis);
+</script>
+<script>/* واجهة OvaSense — عرض وتفاعل. المنطق في OvaEngine/OvaAI/OvaSecurity. */
+(function () {
+  'use strict';
+  const U = OvaUtil, E = OvaEngine, AI = OvaAI, SEC = OvaSecurity, KB = OvaKB, TW = OvaTwin, CH = OvaChat;
+  const esc = U.esc, $ = s => document.querySelector(s);
+  const LS = 'ovasense.v1';
+  let env = null, tab = 'home', flash = {}, timer = null, dietSeed = 0, tourI = -1;
+
+  const TABS = [['home', 'الرئيسية'], ['measure', 'قياساتي'], ['food', 'الغذاء'], ['symptoms', 'الأعراض والنزيف'], ['fertility', 'الخصوبة والدورة'], ['twin', 'التوأم الرقمي'], ['chat', 'المساعد'], ['doctor', 'الطبيب'], ['device', 'الجهاز'], ['lab', 'مختبر الأمان'], ['about', 'عن المشروع']];
+
+  // ---------- حفظ/تحميل ----------
+  function save() { try { localStorage.setItem(LS, JSON.stringify(env.S)); } catch (e) { /* التخزين غير متاح */ } }
+  function load() { try { const j = localStorage.getItem(LS); if (j) { const s = JSON.parse(j); if (s && s.v === 1 && s.device && s.gate) return s; } } catch (e) { } return null; }
+
+  // ---------- أدوات واجهة ----------
+  const fl = k => flash[k] ? '<div class="alert ' + (flash[k].kind || 'info') + '" role="status">' + flash[k].html + '</div>' : '';
+  const setFlash = (k, html, kind) => { flash[k] = { html, kind }; };
+  const val = id => { const e = document.getElementById(id); return e ? e.value : ''; };
+  const num = id => Number(val(id));
+  const chk = id => { const e = document.getElementById(id); return !!(e && e.checked); };
+  const pill = (t, k) => '<span class="pill ' + (k || '') + '">' + esc(t) + '</span>';
+  const tile = (label, v, sub) => '<div class="tile"><small>' + esc(label) + '</small><div class="v">' + v + '</div><div class="s">' + (sub || '') + '</div></div>';
+
+  function chart(o) {
+    const W = o.w || 640, H = o.h || 220, m = { l: 42, r: 10, t: 10, b: 24 };
+    const x = v => m.l + (v - o.x0) / (o.x1 - o.x0) * (W - m.l - m.r);
+    const y = v => H - m.b - (v - o.y0) / (o.y1 - o.y0) * (H - m.t - m.b);
+    let s = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.label || '') + '">';
+    for (let i = 0; i <= 4; i++) { const v = o.y0 + (o.y1 - o.y0) * i / 4; s += '<line class="gridl" x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (m.l - 4) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + U.round(v, o.yd || 0) + '</text>'; }
+    (o.xt || []).forEach(t => { s += '<text x="' + x(t.v) + '" y="' + (H - 6) + '" text-anchor="' + (t.v >= o.x1 ? 'end' : t.v <= o.x0 ? 'start' : 'middle') + '">' + esc(t.l) + '</text>'; });
+    if (o.range) s += '<rect class="rng" x="' + m.l + '" width="' + (W - m.l - m.r) + '" y="' + y(o.range.high) + '" height="' + Math.max(0, y(o.range.low) - y(o.range.high)) + '"/>';
+    (o.bands || []).forEach(b => {
+      const top = b.hi.map(p => x(p[0]) + ',' + y(p[1])).join(' '), bot = b.lo.slice().reverse().map(p => x(p[0]) + ',' + y(p[1])).join(' ');
+      s += '<polygon class="band" points="' + top + ' ' + bot + '"/>';
+    });
+    (o.lines || []).forEach(l => { if (l.pts.length) s += '<polyline class="' + l.cls + '" points="' + l.pts.map(p => x(p[0]).toFixed(1) + ',' + y(p[1]).toFixed(1)).join(' ') + '"/>'; });
+    (o.dots || []).forEach(d => { s += '<circle class="' + d.cls + '" cx="' + x(d.x) + '" cy="' + y(d.y) + '" r="' + (d.r || 3.5) + '"><title>' + esc(d.title || '') + '</title></circle>'; });
+    return s + '</svg>';
+  }
+
+  // ---------- جدول «ماذا يقرأ الجهاز» ----------
+  const READ_TABLE = [
+    ['جلوكوز السائل الخلالي', 'يقيسه الجهاز', 'كل 5 دقائق', 'ملغ/دل', 'مقدَّر وليس دماً مباشراً؛ يتأخر 5–10 دقائق ويُعايَر بقياس دم.'],
+    ['مؤشر هرموني (HM1)', 'يقيسه الجهاز', 'كل ساعة', 'وحدات اعتباطية', 'المؤشر الفعلي يُحدَّد بعد مرحلة التحقق؛ لا يُشخّص.'],
+    ['التدفق المقاس (حساس التدفق)', 'يقيسه الجهاز', 'عند كل جرعة', 'µL', 'مقارنة بالمأمور به؛ انحراف أكثر من 20% يوقف التوصيل.'],
+    ['الخزان، البطارية، عمر الرقعة، جودة الإشارة', 'يقيسه الجهاز', 'مستمر', '% / µL / يوم', 'تنبيهات استباقية للاستبدال والمعايرة.'],
+    ['الوزن، الضغط، قياس دم مرجعي', 'تُدخله المريضة', 'عند الحاجة', 'كغ / ملم زئبق / ملغ/دل', 'القياس المرجعي يعاير المستشعر.'],
+    ['الوجبات، الأعراض، النزيف', 'تُدخله المريضة', 'يومياً', 'جم كربوهيدرات / 0–3 / PBAC', 'أساس الارتباطات وتحليل أنماط النزيف.'],
+    ['التحاليل المخبرية، الخطة، الحدود', 'يُدخله الطبيب', 'دورياً', '—', 'الخطة موقَّعة رقمياً ويفرضها الجهاز.'],
+    ['الوقت ضمن النطاق، حاجة التحليل، أنماط النزيف، الارتباطات', 'يستنتجه الذكاء الاصطناعي', 'مستمر', '—', 'دعم قرار فقط؛ لا ينفّذ جرعات.']
+  ];
+  const readTable = () => '<div class="scroll"><table><thead><tr><th>القيمة</th><th>المصدر</th><th>التكرار</th><th>الوحدة</th><th>ملاحظة</th></tr></thead><tbody>' + READ_TABLE.map(r => '<tr>' + r.map((c, i) => '<td>' + (i === 1 ? pill(c, c.startsWith('يقيس') ? 'ok' : c.startsWith('يستنتج') ? 'info' : '') : esc(c)) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+
+  // ---------- العروض ----------
+  function arrow(S) {
+    const g = S.readings.filter(r => r.type === 'glucose');
+    if (g.length < 7) return '→';
+    const a = g[g.length - 1].value, b = g[g.length - 7].value, d = a - b;
+    return d > 10 ? '↑' : d > 4 ? '↗' : d < -10 ? '↓' : d < -4 ? '↘' : '→';
+  }
+  function vHome() {
+    const S = env.S, d = E.derive(env), now = S.clock.now;
+    const g = d.latestGlucose, s7 = d.stats7;
+    const w0 = now - U.DAY;
+    const pts = S.readings.filter(r => r.type === 'glucose' && r.t >= w0).map(r => [r.t, r.value]);
+    const maxY = Math.max(180, ...pts.map(p => p[1]) , 0) + 10;
+    const xt = []; for (let h = 0; h <= 24; h += 6) xt.push({ v: w0 + h * U.HOUR, l: U.hhmm(w0 + h * U.HOUR) });
+    const dots = env.gate.s.deliveries.filter(x => x.t >= w0).map(x => ({ x: x.t, y: 52, cls: 'd1', title: 'جرعة ' + x.deliveredUL + ' µL ' + U.hhmm(x.t) }))
+      .concat(S.meals.filter(m => m.t >= w0 && m.t <= now).map(m => ({ x: m.t, y: maxY - 4, cls: 'd2', r: 4, title: m.name + ' ' + m.carbs + ' جم ' + U.hhmm(m.t) })));
+    const bn = d.bloodNeed;
+    const alerts = d.alerts.map(a => '<div class="alert ' + (a.lvl === 'danger' ? 'danger' : a.lvl === 'warn' ? 'warn' : 'info') + '">' + esc(a.text) + '</div>').join('');
+    const f = d.fert, ds0 = S.device, due = S.labs.lastLabT ? Math.ceil(S.labs.labIntervalDays - (now - S.labs.lastLabT) / U.DAY) : null;
+    const rem = [];
+    if (due != null) rem.push(due <= 0 ? 'موعد تحليل الدم متأخر (الفاصل ' + S.labs.labIntervalDays + ' يوماً).' : 'تحليل الدم القادم بعد ' + due + ' يوماً.');
+    if (f && !f.empty && f.phase === 'fertile') rem.push('أنتِ ضمن نافذة الخصوبة المقدّرة؛ إن كنتِ تتابعين LH فسجّلي اختبار اليوم.');
+    if (f && !f.empty && f.late) rem.push('الدورة متأخرة عن المتوقع (اليوم ' + f.dayOfCycle + '). سجّلي النزيف عند بدئه.');
+    if (ds0.patchApplied && !(ds0.calib && ds0.calib.t >= ds0.patchAppliedAt)) rem.push('لم تُعايَر الرقعة الحالية بقياس دم مرجعي بعد.');
+    const note = d.doctorNote ? '<div class="alert info"><b>رسالة الطبيب</b> · ' + U.fmtDT(d.doctorNote.t) + '<br>' + esc(d.doctorNote.text) + '</div>' : '';
+    const stop = ds0.faultLatched ? '<button class="btn" data-act="clearFault">استئناف التوصيل</button>' : '<button class="btn dng" data-act="estop" aria-label="إيقاف التوصيل فوراً">⏹ إيقاف التوصيل فوراً</button>';
+    return '<h2>أهلاً، ' + esc(S.patient.name) + '</h2>' + fl('home') + alerts + note +
+      '<div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between"><div><b>الإيقاف الطارئ</b><div class="small mut">يوقف أي جرعة قادمة فوراً. الاستئناف يدوي، ويُسجَّل الحدث في سجل التدقيق.</div></div>' + stop + '</div>' +
+      '<div class="grid g3" style="margin-top:12px">' +
+      tile('الجلوكوز الحالي (سائل خلالي)', g ? g.value + ' <span class="small">ملغ/دل ' + arrow(S) + '</span>' : '—', g ? 'عند ' + g.when + (g.q != null ? ' · جودة ' + g.q : '') : 'لا قراءة') +
+      tile('الوقت ضمن النطاق (7 أيام)', s7.n ? s7.tirPct + '%' : '—', s7.n ? 'النطاق ' + S.range.low + '–' + S.range.high + ' · المتوسط ' + s7.mean : '') +
+      tile('الجرعة القادمة', d.nextDose ? d.nextDose.doseUL + ' µL' : '—', d.nextDose ? esc(d.nextDose.when) : 'لا خطة') +
+      tile('الالتزام (7 أيام)', d.adherencePct != null ? d.adherencePct + '%' : '—', 'جرعات منفّذة/مجدولة') +
+      tile('جودة الإشارة', d.quality != null ? d.quality : '—', d.quality != null && d.quality < 0.6 ? 'منخفضة: عايري' : 'آخر 6 ساعات') +
+      tile('كتلة الجسم BMI', d.bmi ? d.bmi.v : '—', d.bmi ? esc(d.bmi.cat) + ' · ' + d.weight + ' كغ' : '') +
+      tile('الدورة', f && !f.empty ? 'يوم ' + f.dayOfCycle : '—', f && !f.empty ? esc(OvaFertility.PHASE_AR[f.phase]) : 'سجّلي أول يوم نزيف') +
+      tile('هل أحتاج تحليل دم؟', pill(bn.label, bn.level === 'high' ? 'danger' : bn.level === 'medium' ? 'warn' : 'ok'), 'الدرجة ' + bn.score + '/100') +
+      '</div>' +
+      (rem.length ? '<div class="card" style="margin-top:12px"><h3>تذكيرات</h3><ul>' + rem.map(r => '<li>' + esc(r) + '</li>').join('') + '</ul></div>' : '') +
+      '<div class="card" style="margin-top:12px"><h3>الجلوكوز خلال 24 ساعة</h3>' +
+      chart({ label: 'الجلوكوز خلال 24 ساعة', x0: w0, x1: now, y0: 50, y1: maxY, range: S.range, xt, lines: [{ cls: 'l1', pts: pts.filter((p, i) => i % 2 === 0) }], dots }) +
+      '<p class="small mut">المنطقة الخضراء = النطاق الذي حدده الطبيب · النقاط الوردية = جرعات الجهاز · الصفراء = وجبات.</p></div>' +
+      '<div class="grid g2" style="margin-top:12px"><div class="card"><h3>لماذا هذا التقدير؟</h3>' + (bn.reasons.length ? '<ul>' + bn.reasons.map(r => '<li>' + esc(r.text) + '</li>').join('') + '</ul>' : '<p>لا أسباب تستدعي التحليل الآن.</p>') +
+      '<div class="row"><button class="btn sec sm" data-act="goto" data-v="measure">سجّلي قياس دم مرجعي</button></div></div>' +
+      '<div class="card"><h3>مراجعة الذكاء الاصطناعي للخطة</h3>' + d.review.map(r => '<div class="alert info">' + esc(r.text) + (r.requiresDoctor ? ' <span class="small mut">(يتطلب موافقة وتوقيع الطبيب)</span>' : '') + '</div>').join('') + '<p class="small mut">الاقتراحات ضمن حدود الخطة فقط ولا تُنفَّذ تلقائياً.</p></div></div>' +
+      '<details class="card" style="margin-top:12px"><summary><b>ماذا يقرأ الجهاز بالضبط؟</b></summary>' + readTable() + '</details>';
+  }
+
+  function vMeasure() {
+    const S = env.S;
+    const man = S.readings.filter(r => r.src === 'manual').slice(-12).reverse();
+    const lbl = { weight: 'وزن (كغ)', bp: 'ضغط (ملم زئبق)', lab_glucose: 'قياس دم مرجعي (ملغ/دل)' };
+    return '<h2>قياساتي</h2>' + fl('measure') +
+      '<div class="card"><h3>تسجيل قياس جديد</h3><div class="row">' +
+      '<label>النوع<select id="m-type"><option value="weight">الوزن (كغ)</option><option value="bp">الضغط (انقباضي/انبساطي)</option><option value="lab_glucose">قياس دم مرجعي — يعاير المستشعر</option></select></label>' +
+      '<label>القيمة<input id="m-val" type="number" step="0.1" inputmode="decimal" style="width:110px"></label>' +
+      '<label>انبساطي (للضغط)<input id="m-dia" type="number" step="1" inputmode="numeric" style="width:110px"></label>' +
+      '<button class="btn" data-act="addMeasure">حفظ</button></div>' +
+      '<p class="small mut">القياس المرجعي للجلوكوز يُستخدم لمعايرة قراءة السائل الخلالي ويرفع جودة الإشارة.</p></div>' +
+      '<div class="card" style="margin-top:12px"><h3>آخر القياسات اليدوية</h3>' + (man.length ? '<div class="scroll"><table><thead><tr><th>الوقت</th><th>النوع</th><th>القيمة</th></tr></thead><tbody>' + man.map(r => '<tr><td>' + U.fmtDT(r.t) + '</td><td>' + esc(lbl[r.type] || r.type) + '</td><td>' + r.value + (r.dia ? '/' + r.dia : '') + '</td></tr>').join('') + '</tbody></table></div>' : '<p class="mut">لا توجد قياسات يدوية بعد.</p>') +
+      '<div class="row"><button class="btn sec sm" data-act="exportCsv">تنزيل القراءات (CSV)</button></div></div>';
+  }
+
+  function vFood() {
+    const S = env.S, d = E.derive(env), p = S.patient, plan = AI.dietPlan({ weightKg: d.weight, heightCm: p.heightCm, age: p.age, activity: p.activity, goal: p.goal }, Math.floor(S.clock.now / U.DAY) + dietSeed);
+    return '<h2>الغذاء الشخصي</h2>' + fl('food') +
+      '<div class="card"><h3>ملفي</h3><div class="row">' +
+      '<label>الطول (سم)<input id="p-h" type="number" value="' + p.heightCm + '" style="width:90px"></label>' +
+      '<label>العمر<input id="p-a" type="number" value="' + p.age + '" style="width:80px"></label>' +
+      '<label>النشاط<select id="p-act">' + [['low', 'خفيف'], ['moderate', 'متوسط'], ['high', 'عالٍ']].map(o => '<option value="' + o[0] + '"' + (p.activity === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></label>' +
+      '<label>الهدف<select id="p-goal"><option value="maintain"' + (p.goal === 'maintain' ? ' selected' : '') + '>تثبيت الوزن</option><option value="lose"' + (p.goal === 'lose' ? ' selected' : '') + '>إنقاص تدريجي</option></select></label>' +
+      '<button class="btn" data-act="saveProfile">تحديث الخطة</button></div></div>' +
+      '<div class="card" style="margin-top:12px"><h3>خطة اليوم · ' + plan.energy.target + ' سعراً</h3><div class="scroll"><table><thead><tr><th>الوجبة</th><th>المكوّنات</th><th>سعرات</th><th>كربوهيدرات</th></tr></thead><tbody>' +
+      plan.meals.map(m => '<tr><td><b>' + m.label + '</b></td><td>' + m.items.map(i => esc(i.ar) + (i.qty !== 1 ? ' ×' + i.qty : '') + ' <span class="small mut">(' + esc(i.serving) + ')</span>').join('<br>') + '</td><td>' + m.kcal + '</td><td>' + m.carb + ' جم</td></tr>').join('') +
+      '</tbody></table></div><p><b>المجموع:</b> ' + plan.totals.kcal + ' سعراً · كربوهيدرات ' + plan.totals.carb + ' جم · بروتين ' + plan.totals.protein + ' جم · ألياف ' + plan.totals.fiber + ' جم</p>' +
+      '<p class="small mut">' + plan.notes.map(esc).join(' ') + '</p><div class="row"><button class="btn sec sm" data-act="shuffleDiet">بدّلي الخيارات</button></div></div>' +
+      '<div class="card" style="margin-top:12px"><h3>سجّلي وجبة (تؤثر على نموذج الجلوكوز)</h3><div class="row"><label>الاسم<input id="ml-n" value="وجبة" style="width:140px"></label><label>كربوهيدرات (جم)<input id="ml-c" type="number" value="60" style="width:110px"></label><button class="btn" data-act="addMeal">تسجيل الآن</button></div></div>' +
+      '<div class="card" style="margin-top:12px"><h3>مكمل أو عشب؟ اسألي قبل الاستخدام</h3><div class="row"><label>الاسم<input id="sp-q" placeholder="مثال: ميو إينوزيتول" style="width:220px"></label><label>أدويتي (اختياري)<input id="sp-m" value="' + esc(p.meds) + '" style="width:200px"></label><label><span>حامل؟</span><input id="sp-p" type="checkbox"' + (p.pregnant ? ' checked' : '') + '></label><label><span>ضغط مرتفع؟</span><input id="sp-h" type="checkbox"' + (p.hypertension ? ' checked' : '') + '></label><button class="btn" data-act="checkSupp">تحقق</button></div>' + fl('supp') + '<p class="small mut">محتوى تعليمي يحتاج مراجعة الطبيب/الصيدلي. إن لم أجد معلومة موثوقة لا أخمّن.</p></div>';
+  }
+
+  function vSymptoms() {
+    const S = env.S, d = E.derive(env), b = d.bleeding, today = U.dayKey(S.clock.now);
+    const te = S.symptoms.find(x => x.date === today) || {};
+    const sl = (id, label) => '<label>' + label + ' (<output id="o-' + id + '">' + (te[id] != null ? te[id] : 0) + '</output>)<input type="range" id="s-' + id + '" min="0" max="3" step="1" value="' + (te[id] != null ? te[id] : 0) + '" data-out="o-' + id + '"></label>';
+    const sevCls = s => s === 'danger' ? 'danger' : s === 'warn' ? 'warn' : s === 'ok' ? 'ok' : 'info';
+    return '<h2>الأعراض والنزيف</h2>' + fl('sym') +
+      '<div class="grid g2"><div class="card"><h3>يوميات الأعراض · ' + today + '</h3><div class="grid g3">' + sl('acne', 'حب الشباب') + sl('hirsutism', 'الشعر الزائد') + sl('fatigue', 'الإرهاق') + sl('mood', 'تقلب المزاج') + sl('cramps', 'ألم الحوض') + sl('bloating', 'الانتفاخ') + sl('hairloss', 'تساقط الشعر') + sl('headache', 'الصداع') + '</div><p class="small mut">0 = لا شيء، 3 = شديد.</p><button class="btn" data-act="saveSymptoms">حفظ اليوم</button></div>' +
+      '<div class="card"><h3>تسجيل النزيف · ' + today + '</h3><div class="row">' +
+      '<label>فوط خفيفة<input id="b-pl" type="number" min="0" value="0" style="width:70px"></label><label>متوسطة<input id="b-pm" type="number" min="0" value="0" style="width:70px"></label><label>مشبعة<input id="b-ps" type="number" min="0" value="0" style="width:70px"></label>' +
+      '<label>خثرات صغيرة<input id="b-cs" type="number" min="0" value="0" style="width:70px"></label><label>خثرات كبيرة<input id="b-cl" type="number" min="0" value="0" style="width:70px"></label></div>' +
+      '<div class="row"><label><span>تدفق مفاجئ</span><input id="b-fl" type="checkbox"></label><label><span>تبقيع فقط</span><input id="b-sp" type="checkbox"></label><label><span>دوخة</span><input id="b-dz" type="checkbox"></label><button class="btn" data-act="saveBleeding">حفظ</button></div></div></div>' +
+      '<div class="card" style="margin-top:12px"><h3>تحليل نمط النزيف</h3>' + (b.patterns.length ? b.patterns.map(p => '<div class="alert ' + sevCls(p.sev) + '">' + esc(p.text) + '</div>').join('') : '<p class="mut">سجّلي دورتين على الأقل لاستخراج الأنماط.</p>') +
+      (b.episodes.length ? '<div class="scroll"><table><thead><tr><th>البداية</th><th>النهاية</th><th>الأيام</th><th>PBAC</th><th>ملاحظات</th></tr></thead><tbody>' + b.episodes.map(e => '<tr><td>' + e.start + '</td><td>' + e.end + '</td><td>' + e.days + '</td><td>' + e.pbac + '</td><td>' + (e.spottingOnly ? 'تبقيع' : e.heavy ? 'غزير' : '') + '</td></tr>').join('') + '</tbody></table></div>' : '') +
+      '<p class="small mut">' + esc(b.note) + '</p></div>' +
+      '<div class="card" style="margin-top:12px"><h3>الأعراض مقابل القراءات</h3><div class="scroll"><table><thead><tr><th>القراءة</th><th>العرض</th><th>النتيجة</th></tr></thead><tbody>' + d.corr.map(c => '<tr><td>' + esc(c.a) + '</td><td>' + esc(c.b) + '</td><td>' + esc(c.text) + '</td></tr>').join('') + '</tbody></table></div><p class="small mut">سبيرمان على قيم يومية؛ يلزم 10 أيام على الأقل. الارتباط ليس سببية.</p></div>';
+  }
+
+  function vTwin() {
+    const S = env.S, d = E.derive(env), tw = S.twin, bs = d.twinBase;
+    const cmp = TW.compare(bs, { deficitKcal: tw.deficit, activityMinPerWeek: tw.act, adherence: tw.adh / 100, fgAssumption: tw.fgAssumption });
+    const r = cmp.scenario, b = cmp.baseline, H = tw.horizon;
+    const P = (arr) => r.days.map((x, i) => [x, arr[i]]);
+    const w = chart({ label: 'الوزن المتوقع', x0: 0, x1: H, y0: Math.floor(Math.min(...r.weight.lo, bs.weightKg) - 1), y1: Math.ceil(bs.weightKg + 1), xt: [0, 0.25, 0.5, 0.75, 1].map(f => ({ v: H * f, l: String(Math.round(H * f)) })),
+      bands: [{ lo: P(r.weight.lo), hi: P(r.weight.hi) }], lines: [{ cls: 'l1', pts: P(r.weight.mid) }, { cls: 'l3', pts: P(b.weight.mid) }, { cls: 'l4', pts: P(TW.shamannaRef(bs.weightKg, r.days)) }] });
+    const gl = chart({ label: 'سكر الصيام المتوقع', x0: 0, x1: H, y0: Math.floor(Math.min(...r.fg.lo) - 2), y1: Math.ceil(Math.max(...r.fg.hi, bs.fastingGlucose) + 2), xt: [0, 0.5, 1].map(f => ({ v: H * f, l: String(Math.round(H * f)) })),
+      bands: [{ lo: P(r.fg.lo), hi: P(r.fg.hi) }], lines: [{ cls: 'l1', pts: P(r.fg.mid) }, { cls: 'l3', pts: P(b.fg.mid) }] });
+    const sm = r.summary;
+    const sc = TW.scenarios(bs);
+    const sld = (id, label, min, max, step, v, unit) => '<label>' + label + ' (<output id="o-' + id + '">' + v + '</output> ' + unit + ')<input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + v + '" data-out="o-' + id + '" data-twin="1"></label>';
+    return '<h2>التوأم الرقمي · ماذا لو؟</h2>' +
+      '<div class="alert info">أداة تعليمية تعرض <b>نطاقاً محتملاً</b> لا وعداً. لا تتنبأ بالدورة الشهرية، ولا تقدّر الأعراض كمياً. بياناتك الحالية: وزن ' + bs.weightKg + ' كغ · سكر صائم ≈ ' + bs.fastingGlucose + ' ملغ/دل' + (bs.fastingInsulin != null ? ' · إنسولين صائم ' + bs.fastingInsulin : '') + '.</div>' +
+      '<div class="card"><h3>سيناريوهات جاهزة</h3><div class="row">' + sc.map(s => '<button class="chip" data-act="preset" data-d="' + s.plan.deficitKcal + '" data-a="' + s.plan.activityMinPerWeek + '" data-p="' + Math.round(s.plan.adherence * 100) + '">' + esc(s.name) + '</button>').join('') + '</div>' +
+      '<div class="grid g3" style="margin-top:8px">' + sld('t-def', 'عجز السعرات', 0, 600, 50, tw.deficit, 'سعر/يوم') + sld('t-act', 'نشاط', 0, 300, 30, tw.act, 'دقيقة/أسبوع') + sld('t-adh', 'الالتزام', 0, 100, 10, tw.adh, '%') +
+      '<label>المدة<select id="t-hor" data-twin="1">' + [90, 180, 360].map(h => '<option' + (tw.horizon === h ? ' selected' : '') + '>' + h + '</option>').join('') + '</select></label>' +
+      '<label>افتراض الطبيب لأثر دوائي على سكر الصيام (ملغ/دل)<input id="t-ass" type="number" step="1" value="' + tw.fgAssumption + '" data-twin="1"></label></div></div>' +
+      '<div class="grid g2" style="margin-top:12px"><div class="card"><h3>الوزن (كغ) · المحور الأفقي: الأيام</h3>' + w + '<p class="small mut">الخط المتصل = السيناريو · المتقطع = دون تغيير · النقطي = مرجع توضيحي من حالة واحدة منشورة (Shamanna 2025، −12.4% خلال 360 يوماً) وليس توقعاً لك.</p></div>' +
+      '<div class="card"><h3>سكر الصيام (ملغ/دل) · المحور الأفقي: الأيام</h3>' + gl + '<p class="small mut">النطاق من فترات الثقة المنشورة (Domecq 2013): −2.3 (−4.5 إلى −0.1).</p></div></div>' +
+      '<div class="card" style="margin-top:12px"><h3>الخلاصة بعد ' + sm.horizonDays + ' يوماً</h3><ul><li>الوزن ≈ <b>' + sm.weightEnd + ' كغ</b> (تغيّر ' + sm.weightDelta + '، نطاق ' + sm.weightBand[0] + ' – ' + sm.weightBand[1] + ')</li><li>سكر الصيام ≈ <b>' + sm.fgEnd + '</b> (نطاق ' + sm.fgBand[0] + ' – ' + sm.fgBand[1] + ')</li>' + (sm.homaEnd != null ? '<li>HOMA-IR: ' + sm.homaStart + ' ← ' + sm.homaEnd + '</li>' : '') + '</ul>' + '<p class="small mut">' + r.notes.map(esc).join(' · ') + '</p></div>';
+  }
+
+  function vChat() {
+    const S = env.S;
+    const msgs = S.chat.map(m => '<div class="msg ' + (m.who === 'u' ? 'u' : 'b ' + (m.tone || '')) + '">' + esc(m.text) + (m.sources && m.sources.length ? '<small>المصدر: ' + m.sources.map(esc).join('، ') + '</small>' : '') + '</div>').join('');
+    return '<h2>المساعد الشخصي</h2><div class="alert info">مساعد محلي يجيب من بياناتك المحفوظة على هذا الجهاز: قراءاتك، جرعاتك، تحاليلك، نزيفك، غذاؤك، والتوأم الرقمي. <b>ليس طبيباً ولا نموذجاً لغوياً مدرَّباً</b>، ولا يغيّر الجرعات.</div>' +
+      '<div class="card"><div class="msgs" id="msgs" aria-live="polite">' + (msgs || '<p class="mut">اسأليني أي شيء عن بياناتك.</p>') + '</div>' +
+      '<div class="row" style="margin-top:8px">' + CH.SUGGESTIONS.map(s => '<button class="chip" data-act="ask" data-q="' + esc(s) + '">' + esc(s) + '</button>').join('') + '</div>' +
+      '<form id="chatform" class="row" style="margin-top:8px"><input id="chat-in" style="flex:1" placeholder="اكتبي سؤالك…" aria-label="سؤالك" autocomplete="off"><button class="btn" type="submit">إرسال</button><button type="button" class="btn sec" data-act="clearChat">مسح</button></form></div>';
+  }
+
+  function vDoctor() {
+    const S = env.S, d = E.derive(env), gs = env.gate.s, plan = gs.plan, now = S.clock.now;
+    const chain = SEC.verifyChain(gs.audit);
+    const P = plan ? plan.items[0] : { doseUL: 25, times: ['07:00', '12:00', '17:00', '22:00'], singleMaxUL: 30, dailyCapUL: 110, minIntervalMin: 180 };
+    const bn = d.bloodNeed, s7 = d.stats7;
+    return '<h2>لوحة الطبيب</h2><div class="alert warn">في هذا النموذج، مفتاح الطبيب يُولَّد ويُحفظ داخل المتصفح للتجربة فقط. في المنتج الحقيقي يبقى المفتاح الخاص في جهاز/خدمة الطبيب ولا يُحفظ هنا.</div>' + fl('doc') +
+      '<div class="grid g2"><div class="card"><h3>ملخص المريضة</h3><ul><li>الوقت ضمن النطاق (7 أيام): <b>' + (s7.n ? s7.tirPct + '%' : '—') + '</b> · CV ' + (s7.n ? s7.cv + '%' : '—') + '</li><li>جودة الإشارة: ' + (d.quality != null ? d.quality : '—') + '</li><li>الالتزام: ' + (d.adherencePct != null ? d.adherencePct + '%' : '—') + '</li><li>حاجة التحليل: ' + esc(bn.label) + ' (' + bn.score + ')</li><li>أنماط النزيف: ' + (d.bleeding.patterns.map(p => esc(p.text)).join('، ') || '—') + '</li></ul>' +
+      '<h3>مقترحات الذكاء الاصطناعي (استشارية)</h3>' + d.review.map(r => '<div class="alert info">' + esc(r.text) + '</div>').join('') + '<p class="small mut">لا ينفّذ الذكاء الاصطناعي أي جرعة: أي إجراء يتطلب خطة أو أمراً موقَّعاً منك.</p></div>' +
+      '<div class="card"><h3>التحاليل المخبرية</h3><div class="row"><label>إنسولين صائم<input id="l-ins" type="number" step="0.1" value="' + (S.labs.fastingInsulin != null ? S.labs.fastingInsulin : '') + '" style="width:110px"></label><label>HbA1c %<input id="l-a1c" type="number" step="0.1" value="' + (S.labs.hba1c != null ? S.labs.hba1c : '') + '" style="width:100px"></label><label>الفاصل (يوم)<input id="l-int" type="number" value="' + S.labs.labIntervalDays + '" style="width:90px"></label><button class="btn" data-act="saveLabs">حفظ وتسجيل تحليل اليوم</button></div><p class="small mut">آخر تحليل: ' + (S.labs.lastLabT ? U.fmtDT(S.labs.lastLabT) : '—') + '</p>' +
+      '<h3>نطاق الجلوكوز المستهدف</h3><div class="row"><label>أدنى<input id="r-lo" type="number" value="' + S.range.low + '" style="width:80px"></label><label>أعلى<input id="r-hi" type="number" value="' + S.range.high + '" style="width:80px"></label><button class="btn sec" data-act="saveRange">حفظ</button></div></div></div>' +
+      '<div class="card" style="margin-top:12px"><h3>خطة العلاج الموقَّعة ' + (plan ? '(إصدار ' + plan.version + ' · مفتاح ' + plan.keyId + ')' : '(لا خطة)') + '</h3>' +
+      '<div class="row"><label>الجرعة (µL)<input id="pl-dose" type="number" value="' + P.doseUL + '" style="width:90px"></label><label>الأوقات<input id="pl-times" class="ltr" value="' + P.times.join(',') + '" style="width:200px"></label><label>الحد الأقصى للجرعة<input id="pl-sm" type="number" value="' + P.singleMaxUL + '" style="width:90px"></label><label>السقف اليومي<input id="pl-dc" type="number" value="' + P.dailyCapUL + '" style="width:90px"></label><label>الفاصل (دقيقة)<input id="pl-mi" type="number" value="' + P.minIntervalMin + '" style="width:90px"></label><label>عند فقدان الإشارة<select id="pl-sl"><option value="continue_plan">متابعة الخطة</option><option value="hold">تعليق</option></select></label><button class="btn" data-act="signPlan">توقيع وإرسال للجهاز</button></div>' +
+      '<p class="small mut">حدود الجهاز الصلبة: جرعة واحدة ≤ ' + OvaDevice.HARD.singleMaxUL + ' µL، يومياً ≤ ' + OvaDevice.HARD.dailyMaxUL + ' µL؛ لا يقبل الجهاز خطة تتجاوزها. المادة: ' + esc(E.SUBSTANCE) + ' (نموذج عام).</p>' +
+      '<h3>أمر لمرة واحدة</h3><div class="row"><label>الجرعة (µL)<input id="cmd-dose" type="number" value="10" style="width:90px"></label><button class="btn sec" data-act="sendCmd">توقيع وتنفيذ</button></div></div>' +
+      '<div class="card" style="margin-top:12px"><h3>رسالة إلى المريضة</h3><div class="row"><label style="flex:1">النص<textarea id="dn-t" rows="2" style="width:100%" maxlength="400">' + esc(S.doctorNote ? S.doctorNote.text : '') + '</textarea></label><button class="btn" data-act="saveNote">إرسال</button></div><p class="small mut">تظهر في الصفحة الرئيسية للمريضة ويُسجَّل إرسالها. لا تغيّر الجرعات؛ التعديل يتطلب خطة موقَّعة.</p></div>' +
+      '<div class="card" style="margin-top:12px"><h3>المفتاح</h3><p>المعرّف: <span class="mono">' + esc(S.doctor ? S.doctor.keyId : '—') + '</span> <button class="btn sec sm" data-act="rotateKey">إلغاء المفتاح وإصدار جديد</button></p></div>' +
+      '<div class="card" style="margin-top:12px"><h3>سجل التدقيق المترابط (' + gs.audit.length + ' سجل) ' + (chain.ok ? pill('سليم ✓', 'ok') : pill('مكسور عند #' + chain.brokenAt, 'danger')) + '</h3><div class="scroll"><table><thead><tr><th>#</th><th>الوقت</th><th>النوع</th><th>الرمز</th><th>التفاصيل</th><th>البصمة</th></tr></thead><tbody>' +
+      gs.audit.slice(-12).reverse().map(e => '<tr><td>' + e.i + '</td><td>' + U.fmtDT(e.t) + '</td><td>' + esc(e.type) + '</td><td>' + esc(e.code) + '</td><td>' + esc(e.detail) + '</td><td class="mono">' + e.hash.slice(0, 10) + '</td></tr>').join('') + '</tbody></table></div></div>';
+  }
+
+  function vDevice() {
+    const S = env.S, ds = S.device, now = S.clock.now, age = env.device.ageDays(now), gs = env.gate.s;
+    const sg = env.device.senseGlucose(now), hm = env.device.senseHM1(now);
+    const alerts = env.device.alerts(now).map(a => '<div class="alert ' + (a.lvl === 'danger' ? 'danger' : a.lvl === 'warn' ? 'warn' : 'info') + '">' + esc(a.text) + '</div>').join('');
+    const bar = (p) => '<div class="bar"><i style="width:' + U.clamp(p, 0, 100) + '%"></i></div>';
+    const fb = (k, label) => '<label><span>' + label + '</span><input type="checkbox" data-act="fault" data-k="' + k + '"' + (ds.faults[k] ? ' checked' : '') + '></label>';
+    return '<h2>محاكي الجهاز</h2>' + alerts + fl('dev') +
+      '<div class="grid g3">' + tile('عمر الرقعة', ds.patchApplied ? U.round(age, 1) + ' يوم' : '—', 'العمر التصميمي ' + OvaDevice.PATCH_LIFE_DAYS + ' أيام') +
+      tile('الخزان', U.round(ds.reservoirUL) + ' µL' + bar(ds.reservoirUL / OvaDevice.RESERVOIR_UL * 100), 'من 1000 µL') + tile('البطارية', U.round(ds.batteryPct) + '%' + bar(ds.batteryPct), ds.bleUp ? 'البلوتوث متصل' : 'البلوتوث منقطع') +
+      tile('جلوكوز الآن', sg ? sg.value : '—', sg ? 'جودة ' + sg.q : '') + tile('HM1 الآن', hm != null ? hm : '—', 'وحدات اعتباطية') + tile('حالة التوصيل', ds.faultLatched ? pill('متوقف', 'danger') : pill('طبيعي', 'ok'), ds.faultLatched ? 'يلزم مسح العطل' : '') + '</div>' +
+      '<div class="card" style="margin-top:12px"><h3>التحكم</h3><div class="row"><button class="btn" data-act="newPatch">تركيب رقعة جديدة</button><button class="btn sec" data-act="removePatch">إزالة الرقعة</button><button class="btn sec" data-act="toggleBle">' + (ds.bleUp ? 'قطع البلوتوث' : 'وصل البلوتوث') + '</button><button class="btn sec" data-act="clearFault">مسح العطل</button></div>' +
+      '<h3 style="margin-top:10px">حقن أعطال (للاختبار)</h3><div class="row">' + fb('occlusion', 'انسداد') + fb('overflow', 'تدفق زائد') + fb('driftFast', 'انجراف سريع للحساس') + '</div></div>' +
+      '<div class="card" style="margin-top:12px"><h3>ماذا يقرأ الجهاز بالضبط؟</h3>' + readTable() + '</div>' +
+      '<div class="card" style="margin-top:12px"><h3>آخر الجرعات</h3>' + (gs.deliveries.length ? '<div class="scroll"><table><thead><tr><th>الوقت</th><th>المأمور</th><th>المُوصَّل</th><th>المصدر</th></tr></thead><tbody>' + gs.deliveries.slice(-8).reverse().map(x => '<tr><td>' + U.fmtDT(x.t) + '</td><td>' + x.commandedUL + ' µL</td><td>' + x.deliveredUL + ' µL</td><td>' + (x.source === 'plan' ? 'خطة موقَّعة' : 'أمر موقَّع') + '</td></tr>').join('') + '</tbody></table></div>' : '<p class="mut">لا جرعات.</p>') + '</div>';
+  }
+
+  let labResults = [];
+  function vLab() {
+    const rows = labResults.map(r => '<tr><td>' + esc(r.name) + '</td><td class="mono">' + esc(r.expected.join(' / ')) + '</td><td class="mono">' + esc(r.got) + '</td><td>' + (r.pass ? pill('تم الصد ✓', 'ok') : pill('فشل', 'danger')) + '</td></tr>').join('');
+    return '<h2>مختبر الأمان</h2><div class="alert info">جرّبي مهاجمة الجهاز بنفسك. كل محاولة تمر عبر البوابة نفسها التي تُنفَّذ بها الأوامر الحقيقية، وتُسجَّل في سجل التدقيق.</div>' +
+      '<div class="card"><div class="row"><button class="btn" data-act="runAll">تشغيل كل الهجمات</button></div><div class="row" style="margin-top:8px">' + E.attacks.map(a => '<button class="chip" data-act="attack" data-id="' + a.id + '">' + esc(a.name) + '</button>').join('') + '</div></div>' +
+      '<div class="card" style="margin-top:12px"><h3>النتائج</h3>' + (rows ? '<div class="scroll"><table><thead><tr><th>الهجوم</th><th>المتوقع</th><th>الناتج</th><th>الحالة</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="mut">لم تُشغَّل هجمات بعد.</p>') + '</div>' +
+      '<div class="card" style="margin-top:12px"><h3>طبقات الحماية</h3><ol><li>توقيع ECDSA P-256 لكل خطة وأمر، ومفاتيح مُدرَجة وقابلة للإلغاء.</li><li>مدة صلاحية قصيرة + رقم تسلسل متزايد + nonce لمنع الإعادة.</li><li>الجهاز يفرض حدود الجرعة والسقف اليومي والفاصل ولو كانت الأوامر موقَّعة.</li><li>حدود صلبة في برنامج الجهاز لا يتجاوزها أي مخطط.</li><li>مراقبة التدفق: انحراف >20% يوقف التوصيل ويُنبّه.</li><li>الذكاء الاصطناعي لا يملك مفتاحاً: أوامره ترفض (UNSIGNED).</li><li>سجل تدقيق مترابط بالبصمات يكشف أي تعديل.</li></ol></div>';
+  }
+
+  function vAbout() {
+    const refs = KB.REFERENCES.map(r => '<div class="ref"><span class="pill">' + r.lvl + '</span> <b>[' + r.id + ']</b> <a href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.short) + '</a><div class="small mut">' + esc(r.full) + ' — ' + esc(r.use) + '</div></div>').join('');
+    return '<h2>عن OvaSense AI</h2><div class="card"><p><b>الفكرة:</b> جهاز قابل للارتداء لإدارة متلازمة تكيّس المبايض <u>بعد</u> تشخيص الطبيب — لا يشخّص. قرص إلكتروني قابل لإعادة الاستخدام + رقعة حيوية قابلة للاستبدال بإبر دقيقة (استشعار وتوصيل بمسارين منفصلين) + تطبيق ودعم قرار بالذكاء الاصطناعي.</p>' +
+      '<p><b>أهداف النظام:</b> تقليل الآثار الجانبية للأدوية، مراقبة يومية، تقليل تحاليل الدم غير الضرورية، التمييز بين أنماط النزيف، تتبع الأعراض، تغذية شخصية، جدولة الجرعات، ومتابعة الطبيب يومياً.</p>' +
+      '<p><b>سير العمل:</b> الطبيب يشخّص ← الذكاء الاصطناعي يقرأ تحاليلها ← الرقعة تحمل ما اختاره الطبيب ← الجهاز يعطي قراءات يومية وجرعات حسب الوصفة ← مراجعة الذكاء الاصطناعي والطبيب.</p></div>' +
+      '<div class="card" style="margin-top:12px"><h3>حدود هذا النموذج الأولي</h3><ul><li>بيانات الجهاز مُحاكاة؛ لا أجهزة حقيقية مرتبطة.</li><li>المساعد قواعد محلية، وليس نموذجاً لغوياً.</li><li>التوأم الرقمي تعليمي بنطاقات من دراسات منشورة.</li><li>قاعدة الأعشاب/المكملات تحتاج مراجعة سريرية.</li><li>مفتاح الطبيب محفوظ داخل المتصفح للتجربة فقط.</li></ul></div>' +
+      '<div class="card" style="margin-top:12px"><h3>مفتاح مستوى الدليل</h3>' + KB.LEGEND.map(l => '<p><b>' + l.k + ' ' + l.t + ':</b> ' + l.d + '</p>').join('') + '</div>' +
+      '<div class="card" style="margin-top:12px"><h3>المراجع</h3>' + refs + '</div>' +
+      '<div class="card" style="margin-top:12px"><h3>الجولة</h3><div class="row"><button class="btn" data-act="tour">ابدأ الجولة (≈ 90 ثانية)</button><button class="btn dng sm" data-act="reset">إعادة ضبط البيانات التجريبية</button></div></div>';
+  }
+
+
+  // ---------- الخصوبة والدورة ----------
+  function vFertility() {
+    const S = env.S, d = E.derive(env), f = d.fert, today = U.dayKey(S.clock.now);
+    const te = S.fertility.find(x => x.date === today) || {};
+    const bl = new Set(S.bleeding.filter(b => !b.spotting).map(b => b.date));
+    const head = '<h2>الخصوبة والدورة</h2>' + fl('fert') +
+      '<div class="alert warn">تقديرات إحصائية من تواريخ دوراتك فقط؛ <b>ليست وسيلة لمنع الحمل</b> ولا تؤكد الإباضة ولا تشخّص. في المتلازمة قد تكون الدورات غير منتظمة فيصبح التقدير واسعاً. القرار الطبي لطبيبك.</div>';
+    const logCard = '<div class="card" style="margin-top:12px"><h3>تسجيل اليوم · ' + today + '</h3><div class="row">' +
+      '<button class="btn" data-act="startPeriod">بدأت دورتي اليوم</button>' +
+      '<label>اختبار LH<select id="f-lh"><option value="">لم أُجرِ</option><option value="neg"' + (te.lh === 'neg' ? ' selected' : '') + '>سلبي</option><option value="pos"' + (te.lh === 'pos' ? ' selected' : '') + '>إيجابي</option></select></label>' +
+      '<label>إفرازات عنق الرحم<select id="f-mu">' + [['', 'لم أسجّل'], ['dry', 'جافة'], ['sticky', 'لزجة'], ['creamy', 'كريمية'], ['eggwhite', 'شفافة مطاطية']].map(o => '<option value="' + o[0] + '"' + (te.mucus === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></label>' +
+      '<button class="btn sec" data-act="saveFert">حفظ</button></div>' +
+      '<p class="small mut">نتيجة LH الإيجابية تُقرّب تقدير الإباضة (غالباً خلال يوم إلى يومين). في المتلازمة قد يرتفع LH مزمناً فتظهر نتائج إيجابية كاذبة. الإفرازات تُسجَّل للمتابعة ولا تدخل في الحساب.</p></div>';
+    if (f.empty) return head + '<div class="card" style="margin-top:12px"><p>لا توجد بداية دورة مسجّلة. سجّلي أيام النزيف (تبويب «الأعراض والنزيف») أو اضغطي «بدأت دورتي اليوم».</p></div>' + logCard;
+    const rng = (a, b) => a === b ? a : a + ' ← ' + b;
+    const cal = OvaFertility.calendar(f, bl);
+    const strip = '<div class="cal" role="img" aria-label="شريط أيام الدورة الحالية">' + cal.map(c => '<span class="cd ' + c.cls + '" title="' + c.key + '">' + c.day + '</span>').join('') + '</div>' +
+      '<p class="small mut"><span class="lg bl"></span> نزيف · <span class="lg fr"></span> نافذة الخصوبة المقدّرة · <span class="lg ov"></span> الإباضة المقدّرة · <span class="lg np"></span> مجال الدورة القادمة · <span class="lg td"></span> اليوم</p>';
+    const conf = f.confidence === 'low' ? pill('ثقة منخفضة', 'warn') : pill('ثقة متوسطة', 'info');
+    const why = [];
+    if (f.insufficient) why.push('عدد الدورات المسجّلة قليل (' + f.n + ')؛ سجّلي ثلاث دورات على الأقل لتحسين التقدير.');
+    f.reasons.forEach(r => why.push(r));
+    if (f.longGap) why.push('مرّ أكثر من 90 يوماً منذ آخر دورة: يُنصح بمراجعة الطبيب.');
+    return head +
+      '<div class="grid g3" style="margin-top:12px">' +
+      tile('اليوم من الدورة', f.dayOfCycle, esc(OvaFertility.PHASE_AR[f.phase])) +
+      tile('الدورة القادمة (تقدير)', '<span class="mono" style="font-size:15px">' + f.nextStart.lo.slice(5) + ' ← ' + f.nextStart.hi.slice(5) + '</span>', 'المنتصف ' + f.nextStart.key) +
+      tile('متوسط طول الدورة', f.mean != null ? f.mean + ' يوماً' : '—', f.n ? 'من ' + f.n + ' دورة' + (f.sd != null ? ' · ±' + f.sd : '') : 'يلزم دورتان') +
+      tile('الإباضة المقدّرة', '<span class="mono" style="font-size:15px">' + f.ovulation.key.slice(5) + '</span>', f.ovulation.basis === 'LH' ? 'من اختبار LH إيجابي' : 'من التقويم ±' + Math.round((U.dayKeyToT(f.ovulation.hi) - U.dayKeyToT(f.ovulation.lo)) / U.DAY / 2) + ' أيام') +
+      tile('نافذة الخصوبة المقدّرة', '<span class="mono" style="font-size:15px">' + f.fertile.from.slice(5) + ' ← ' + f.fertile.to.slice(5) + '</span>', '6 أيام تنتهي بيوم الإباضة [23]') +
+      tile('موثوقية التقدير', conf, f.irregular ? 'دورات غير منتظمة' : '') + '</div>' +
+      '<div class="card" style="margin-top:12px"><h3>دورتك الحالية</h3>' + strip + '</div>' +
+      '<div class="card" style="margin-top:12px"><h3>ماذا يعني هذا لحالتك؟</h3>' +
+      (f.irregular ? '<div class="alert warn">دوراتك مصنّفة <b>غير منتظمة</b> وفق معايير الإرشاد الدولي [24]: ' + esc(f.reasons.join(' ')) + ' لذلك قد لا تحدث إباضة في كل دورة، وموعد النافذة أعلاه تقريبي جداً.</div>' : '') +
+      (why.length && !f.irregular ? why.map(w => '<div class="alert info">' + esc(w) + '</div>').join('') : '') +
+      (f.lens.length ? '<p class="small mut">أطوال دوراتك الأخيرة (أيام): <span class="mono">' + f.lens.join(' · ') + '</span></p>' : '') +
+      '<p class="small mut">لم نحسب أي «نسبة احتمال حمل»: لا يوجد أساس موثوق لحسابها من هذه البيانات. التتبع يساعدك على فهم نمطك ومشاركته مع طبيبك.</p></div>' + logCard +
+      (S.fertility.length ? '<div class="card" style="margin-top:12px"><h3>آخر التسجيلات</h3><div class="scroll"><table><thead><tr><th>التاريخ</th><th>LH</th><th>الإفرازات</th></tr></thead><tbody>' + S.fertility.slice(-8).reverse().map(x => '<tr><td>' + x.date + '</td><td>' + ({ pos: 'إيجابي', neg: 'سلبي' }[x.lh] || '—') + '</td><td>' + ({ dry: 'جافة', sticky: 'لزجة', creamy: 'كريمية', eggwhite: 'شفافة مطاطية' }[x.mucus] || '—') + '</td></tr>').join('') + '</tbody></table></div></div>' : '');
+  }
+
+  // ---------- الترحيب ----------
+  let wstep = 0;
+  function vWelcome() {
+    const S = env.S, p = S.patient;
+    const dots = '<div class="row" style="justify-content:center">' + [0, 1, 2].map(i => '<span class="pill ' + (i === wstep ? 'ok' : '') + '">' + (i + 1) + '</span>').join('') + '</div>';
+    let body;
+    if (wstep === 0) body = '<h2>مرحباً بك في OvaSense AI</h2><p>تطبيق لمتابعة إدارة متلازمة تكيّس المبايض <u>بعد</u> تشخيص الطبيب. لا يشخّص ولا يستبدل الطبيب. من أنتِ؟</p><div class="grid g2"><button class="btn" data-act="wRole" data-r="patient">أنا مريضة</button><button class="btn sec" data-act="wRole" data-r="doctor">أنا طبيب/ة (عرض لوحة الطبيب)</button></div>';
+    else if (wstep === 1) body = '<h2>ملفك الشخصي</h2><div class="row">' +
+      '<label>الاسم<input id="w-n" value="' + esc(p.name === 'مريضة تجريبية' ? '' : p.name) + '" placeholder="الاسم" style="width:160px"></label>' +
+      '<label>العمر<input id="w-a" type="number" value="' + p.age + '" style="width:80px"></label>' +
+      '<label>الطول (سم)<input id="w-h" type="number" value="' + p.heightCm + '" style="width:90px"></label>' +
+      '<label>الوزن (كغ)<input id="w-w" type="number" step="0.1" value="' + p.weightKg + '" style="width:90px"></label></div>' +
+      '<div class="row"><label><span>حامل؟</span><input id="w-p" type="checkbox"' + (p.pregnant ? ' checked' : '') + '></label><label><span>ضغط مرتفع؟</span><input id="w-hy" type="checkbox"' + (p.hypertension ? ' checked' : '') + '></label></div>' +
+      '<div class="row"><button class="btn" data-act="wSave">التالي</button></div>';
+    else body = '<h2>ربط الجهاز</h2><p>اربطي القرص (Pod) وركّبي الرقعة الحيوية. في هذا النموذج الجهاز محاكى، والربط يُنشئ رقعة جديدة ويسجّل الحدث.</p><div class="row"><button class="btn" data-act="wPair">ربط وتركيب رقعة</button><button class="btn sec" data-act="wDone">لاحقاً</button></div>';
+    return '<div class="card welcome">' + fl('wel') + dots + body + '<hr><div class="row"><button class="btn sec sm" data-act="wDone">تخطي والبدء بالبيانات التجريبية</button></div><p class="small mut">البيانات تركيبية وتبقى في متصفحك فقط.</p></div>';
+  }
+
+  const VIEWS = { home: vHome, measure: vMeasure, food: vFood, symptoms: vSymptoms, twin: vTwin, chat: vChat, fertility: vFertility, doctor: vDoctor, device: vDevice, lab: vLab, about: vAbout };
+
+  // ---------- العرض ----------
+  function renderClock() {
+    const c = env.S.clock;
+    $('#clockbar').innerHTML = '<span class="t" id="simnow" title="الوقت المحاكى">' + U.fmtDT(c.now) + '</span>' +
+      '<button class="btn sec sm" data-act="runToggle">' + (c.running ? '⏸ إيقاف' : '▶ تشغيل') + '</button>' +
+      '<select id="scale" aria-label="سرعة المحاكاة">' + [[1, '1×'], [60, '60× (دقيقة/ث)'], [600, '600×'], [3600, '3600× (ساعة/ث)']].map(o => '<option value="' + o[0] + '"' + (c.scale === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select>' +
+      '<button class="btn sec sm" data-act="jump" data-h="1">+1 ساعة</button><button class="btn sec sm" data-act="jump" data-h="24">+1 يوم</button>';
+  }
+  function renderNav() {
+    const IC = {
+      home: 'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+      measure: 'M3 12h4l3-8 4 16 3-8h4',
+      food: 'M12 6c-3-1-7 1-7 6.5S8 21 12 21s7-3 7-8.5S15 5 12 6zm0 0c0-2 1-3.5 3-4',
+      symptoms: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z',
+      fertility: 'M12 21s-7-4.6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.4-7 10-7 10z',
+      twin: 'M12 2l9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5',
+      chat: 'M4 5h16v11H9l-5 4z',
+      doctor: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM12 8v7M8.5 11.5h7',
+      device: 'M5 8h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2zM12 12h.01',
+      lab: 'M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3',
+      about: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v5M12 8h.01'
+    };
+    $('#nav').innerHTML = TABS.map(t => '<button data-act="goto" data-v="' + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : '') + '><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (IC[t[0]] || IC.about) + '"/></svg><span>' + t[1] + '</span></button>').join('');
+  }
+  function render() {
+    renderNav(); renderClock();
+    $('#view').innerHTML = env.S.onboarded ? VIEWS[tab]() : vWelcome();
+    const m = $('#msgs'); if (m) m.scrollTop = m.scrollHeight;
+  }
+  const busyEditing = () => { const a = document.activeElement; return a && /INPUT|SELECT|TEXTAREA/.test(a.tagName) && a.id !== 'scale'; };
+
+  // ---------- المؤقّت ----------
+  function tick() {
+    const c = env.S.clock;
+    if (!c.running) return;
+    E.advance(env, c.now + c.scale * 1000);
+    save();
+    const el = $('#simnow'); if (el) el.textContent = U.fmtDT(c.now);
+    if (env.S.onboarded && (tab === 'home' || tab === 'device') && !busyEditing()) { $('#view').innerHTML = VIEWS[tab](); }
+  }
+
+  // ---------- الأفعال ----------
+  async function act(name, el) {
+    const S = env.S, now = S.clock.now, d = el ? el.dataset : {};
+    switch (name) {
+      case 'estop': S.device.faultLatched = 'USER_STOP'; env.gate.audit(now, 'DEVICE', 'USER_STOP', 'إيقاف طارئ من المريضة'); setFlash('home', 'أُوقف التوصيل. اضغطي «استئناف التوصيل» حين تكونين مستعدة.', 'warn'); break;
+      case 'saveNote': { const t = val('dn-t').trim().slice(0, 400); if (!t) { setFlash('doc', 'اكتبي نص الرسالة.', 'warn'); break; } S.doctorNote = { text: t, t: now }; env.gate.audit(now, 'NOTE', 'DOCTOR_NOTE', 'رسالة من الطبيب'); setFlash('doc', 'أُرسلت الرسالة وستظهر في الصفحة الرئيسية للمريضة.', 'ok'); break; }
+      case 'startPeriod': {
+        const k = U.dayKey(now);
+        if (!S.bleeding.some(x => x.date === k)) S.bleeding = S.bleeding.concat({ date: k, pads: { l: 0, m: 1, s: 0 } }).sort((a, b) => a.date < b.date ? -1 : 1);
+        setFlash('fert', 'سُجّلت بداية الدورة اليوم. حدّثي كمية النزيف من تبويب «الأعراض والنزيف».', 'ok'); break;
+      }
+      case 'saveFert': { const k = U.dayKey(now); S.fertility = S.fertility.filter(x => x.date !== k).concat({ date: k, lh: val('f-lh'), mucus: val('f-mu') }).sort((a, b) => a.date < b.date ? -1 : 1); setFlash('fert', 'تم الحفظ وتحديث التقدير.', 'ok'); break; }
+      case 'wRole': wstep = 1; if (d.r === 'doctor') { S.role = 'doctor'; } break;
+      case 'wSave': {
+        const a = num('w-a'), h = num('w-h'), w = num('w-w');
+        if (!(a >= 10 && a <= 90 && h >= 120 && h <= 220 && w >= 30 && w <= 250)) { setFlash('wel', 'تحقّقي من العمر والطول والوزن.', 'warn'); break; }
+        const p = S.patient; p.name = val('w-n').trim() || p.name; p.age = a; p.heightCm = h; p.weightKg = w; p.pregnant = chk('w-p'); p.hypertension = chk('w-hy');
+        E.addReading(env, 'weight', w); wstep = 2; break;
+      }
+      case 'wPair': env.device.applyPatch(now); env.gate.audit(now, 'DEVICE', 'PATCH_APPLIED', 'ربط عند الإعداد'); S.onboarded = true; tab = S.role === 'doctor' ? 'doctor' : 'home'; wstep = 0; break;
+      case 'wDone': S.onboarded = true; tab = S.role === 'doctor' ? 'doctor' : 'home'; wstep = 0; break;
+      case 'goto': tab = d.v; flash = {}; render(); window.scrollTo(0, 0); return;
+      case 'runToggle': S.clock.running = !S.clock.running; save(); renderClock(); return;
+      case 'jump': E.advance(env, now + Number(d.h) * U.HOUR); break;
+      case 'addMeasure': {
+        const type = val('m-type'), v = num('m-val');
+        if (!isFinite(v) || val('m-val') === '') { setFlash('measure', 'أدخلي قيمة صحيحة.', 'warn'); break; }
+        if (type === 'weight' && (v < 30 || v > 250)) { setFlash('measure', 'الوزن خارج النطاق المعقول.', 'warn'); break; }
+        if (type === 'lab_glucose' && (v < 20 || v > 600)) { setFlash('measure', 'قيمة الجلوكوز خارج النطاق المعقول.', 'warn'); break; }
+        if (type === 'bp') { const dia = num('m-dia'); if (!(v >= 70 && v <= 260 && dia >= 40 && dia <= 160)) { setFlash('measure', 'قيم الضغط غير معقولة.', 'warn'); break; } E.addReading(env, 'bp', v, { dia }); }
+        else E.addReading(env, type, v);
+        setFlash('measure', type === 'lab_glucose' ? (S.device.patchApplied ? 'تم الحفظ ومعايرة المستشعر.' : 'تم الحفظ (لا رقعة للمعايرة).') : 'تم الحفظ.', 'ok'); break;
+      }
+      case 'exportCsv': {
+        const rows = ['time,type,value,source'].concat(S.readings.filter(r => r.t > now - 7 * U.DAY).map(r => [U.fmtDT(r.t), r.type, r.value, r.src].join(',')));
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + rows.join('\n')], { type: 'text/csv' })); a.download = 'ovasense-readings.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); return;
+      }
+      case 'saveProfile': { const p = S.patient; p.heightCm = num('p-h') || p.heightCm; p.age = num('p-a') || p.age; p.activity = val('p-act'); p.goal = val('p-goal'); setFlash('food', 'تم تحديث الملف والخطة.', 'ok'); break; }
+      case 'shuffleDiet': dietSeed++; break;
+      case 'addMeal': { const c = num('ml-c'); if (!(c >= 0 && c <= 300)) { setFlash('food', 'كربوهيدرات غير معقولة (0–300).', 'warn'); break; } E.addMeal(env, val('ml-n') || 'وجبة', c); setFlash('food', 'سُجّلت الوجبة. شغّلي المحاكاة أو اقفزي ساعة لترين الأثر.', 'ok'); break; }
+      case 'checkSupp': {
+        S.patient.meds = val('sp-m'); S.patient.pregnant = chk('sp-p'); S.patient.hypertension = chk('sp-h');
+        const r = AI.supplementCheck(val('sp-q'), { meds: S.patient.meds, pregnant: S.patient.pregnant, hypertension: S.patient.hypertension });
+        setFlash('supp', esc(r.text) + (r.warnings ? r.warnings.map(w => '<br>⚠ ' + esc(w)).join('') : ''), r.found ? (r.level === 'caution' ? 'warn' : 'info') : 'warn'); break;
+      }
+      case 'saveSymptoms': {
+        const k = U.dayKey(now), e = { date: k }; ['acne', 'hirsutism', 'fatigue', 'mood', 'cramps', 'bloating', 'hairloss', 'headache'].forEach(f => e[f] = num('s-' + f));
+        S.symptoms = S.symptoms.filter(x => x.date !== k).concat(e).sort((a, b) => a.date < b.date ? -1 : 1); setFlash('sym', 'تم حفظ أعراض اليوم.', 'ok'); break;
+      }
+      case 'saveBleeding': {
+        const k = U.dayKey(now);
+        const e = { date: k, pads: { l: num('b-pl'), m: num('b-pm'), s: num('b-ps') }, clotsS: num('b-cs'), clotsL: num('b-cl'), flooding: chk('b-fl'), spotting: chk('b-sp'), dizzy: chk('b-dz') };
+        S.bleeding = S.bleeding.filter(x => x.date !== k).concat(e).sort((a, b) => a.date < b.date ? -1 : 1);
+        const a = AI.bleedingAnalysis(S.bleeding, now);
+        setFlash('sym', a.urgent ? 'مؤشرات خطر: توجهي للطوارئ أو تواصلي مع الطبيب فوراً.' : 'تم حفظ النزيف وتحديث التحليل.', a.urgent ? 'danger' : 'ok'); break;
+      }
+      case 'preset': S.twin.deficit = Number(d.d); S.twin.act = Number(d.a); S.twin.adh = Number(d.p); break;
+      case 'ask': await ask(d.q); return;
+      case 'clearChat': S.chat = []; break;
+      case 'saveLabs': { const i = val('l-ins'), a = val('l-a1c'); S.labs.fastingInsulin = i === '' ? null : Number(i); S.labs.hba1c = a === '' ? null : Number(a); S.labs.labIntervalDays = Math.max(7, num('l-int') || 90); S.labs.lastLabT = now; env.gate.audit(now, 'LAB', 'ENTERED', 'by doctor'); setFlash('doc', 'حُفظت التحاليل وسُجّل تحليل اليوم.', 'ok'); break; }
+      case 'saveRange': { const lo = num('r-lo'), hi = num('r-hi'); if (!(lo >= 40 && hi > lo && hi <= 300)) { setFlash('doc', 'نطاق غير صالح.', 'warn'); break; } S.range = { low: lo, high: hi }; setFlash('doc', 'حُفظ النطاق.', 'ok'); break; }
+      case 'signPlan': {
+        const times = val('pl-times').split(',').map(x => x.trim()).filter(Boolean);
+        const spec = { doseUL: num('pl-dose'), times, singleMaxUL: num('pl-sm'), dailyCapUL: num('pl-dc'), minIntervalMin: num('pl-mi'), onSignalLoss: val('pl-sl') };
+        const bad = !times.length || times.some(t => !/^([01]\d|2[0-3]):[0-5]\d$/.test(t)) || !(spec.doseUL > 0) || spec.doseUL > spec.singleMaxUL || spec.singleMaxUL > spec.dailyCapUL || !(spec.minIntervalMin >= 0);
+        if (bad) { setFlash('doc', 'تحقق من الحقول: أوقات بصيغة HH:MM، والجرعة ≤ الحد الأقصى ≤ السقف اليومي.', 'warn'); break; }
+        const need = spec.doseUL * times.length * 7;
+        const r = await E.signAndInstallPlan(env, spec, now);
+        setFlash('doc', r.ok ? 'تم توقيع الخطة (إصدار ' + r.version + ') وقبلها الجهاز.' + (need > 1000 ? ' ⚠ استهلاك أسبوعي ' + need + ' µL يتجاوز سعة الخزان 1000 µL.' : '') : 'رفض الجهاز الخطة: ' + esc(r.label), r.ok ? 'ok' : 'danger'); break;
+      }
+      case 'sendCmd': {
+        const dose = num('cmd-dose'); if (!(dose > 0)) { setFlash('doc', 'جرعة غير صالحة.', 'warn'); break; }
+        const r = await E.sendCommand(env, { doseUL: dose }, now);
+        setFlash('doc', r.code === 'OK' ? 'نُفّذ الأمر: ' + r.deliveredUL + ' µL (انحراف ' + r.deviationPct + '%).' : 'لم يُنفَّذ: ' + esc(r.label || r.code), r.code === 'OK' ? 'ok' : 'danger'); break;
+      }
+      case 'rotateKey': { const old = S.doctor.keyId; await E.provisionDoctor(env, now); env.gate.revokeKey(old, now); setFlash('doc', 'أُلغي المفتاح ' + old + ' وأُصدر مفتاح جديد. الخطة المثبتة تبقى سارية.', 'ok'); break; }
+      case 'newPatch': env.device.applyPatch(now); env.gate.audit(now, 'DEVICE', 'PATCH_APPLIED', 'رقعة جديدة'); setFlash('dev', 'رُكّبت رقعة جديدة وامتلأ الخزان.', 'ok'); break;
+      case 'removePatch': env.device.removePatch(); env.gate.audit(now, 'DEVICE', 'PATCH_REMOVED', ''); break;
+      case 'toggleBle': S.device.bleUp = !S.device.bleUp; env.gate.audit(now, 'DEVICE', S.device.bleUp ? 'BLE_UP' : 'BLE_DOWN', ''); break;
+      case 'clearFault': env.device.clearFault(); env.gate.audit(now, 'DEVICE', 'FAULT_CLEARED', ''); break;
+      case 'fault': S.device.faults[d.k] = el.checked; break;
+      case 'attack': { const r = await E.runAttack(env, d.id, now); labResults = labResults.filter(x => x.id !== r.id).concat(r); break; }
+      case 'runAll': labResults = []; for (const a of E.attacks) labResults.push(await E.runAttack(env, a.id, now)); break;
+      case 'tour': startTour(); return;
+      case 'tourNext': await tourStep(1); return;
+      case 'tourPrev': await tourStep(-1); return;
+      case 'tourClose': $('#tour').hidden = true; tourI = -1; return;
+      case 'reset': if (confirm('سيتم حذف بياناتك التجريبية وإعادة إنشائها. متابعة؟')) { try { localStorage.removeItem(LS); } catch (e) { } labResults = []; env = await E.seedDemo(Date.now()); tab = 'home'; flash = {}; } else return; break;
+      default: return;
+    }
+    save(); render();
+  }
+
+  async function ask(q) {
+    const S = env.S;
+    q = (q || '').trim(); if (!q) return;
+    S.chat.push({ who: 'u', text: q });
+    const r = CH.reply(q, E.derive(env));
+    S.chat.push({ who: 'b', text: r.text, sources: r.sources, tone: r.tone });
+    if (S.chat.length > 60) S.chat = S.chat.slice(-60);
+    save(); if (tab !== 'chat') tab = 'chat'; render();
+  }
+
+  // ---------- جولة العرض ----------
+  const TOUR = [
+    { t: 'الرئيسية: ما يقرؤه الجهاز الآن', x: 'نلاحظ الجلوكوز الحالي، الوقت ضمن النطاق، الجرعة القادمة، وتقدير حاجة التحليل مع أسبابه.', f: async () => { tab = 'home'; } },
+    { t: 'وجبة ← أثر على الجلوكوز', x: 'سجّلنا وجبة 70 جم كربوهيدرات وتقدّم الزمن ساعة: يرتفع الجلوكوز في الرسم.', f: async () => { tab = 'home'; E.addMeal(env, 'غداء', 70); E.advance(env, env.S.clock.now + U.HOUR); } },
+    { t: 'المساعد المخصص لبياناتها', x: 'يسأل: «وش يقرأ الجهاز بالضبط؟» ثم «هل أحتاج تحليل دم؟».', f: async () => { await ask('وش يقرأ الجهاز بالضبط؟'); await ask('هل أحتاج تحليل دم؟'); } },
+    { t: 'التوأم الرقمي: ماذا لو؟', x: 'نطاق متوقع للوزن وسكر الصيام لو التزمت بنظام ونشاط.', f: async () => { tab = 'twin'; } },
+    { t: 'الطبيب: خطة موقَّعة وسجل تدقيق', x: 'الجهاز لا ينفّذ إلا ما وقّعه الطبيب ضمن الحدود.', f: async () => { tab = 'doctor'; } },
+    { t: 'مختبر الأمان', x: 'كل الهجمات تُصَدّ: إعادة إرسال، تعديل جرعة، مفتاح مُلغى، أمر الذكاء الاصطناعي بلا توقيع…', f: async () => { tab = 'lab'; labResults = []; for (const a of E.attacks) labResults.push(await E.runAttack(env, a.id, env.S.clock.now)); } },
+    { t: 'عطل: انسداد ← توقف تلقائي', x: 'نحقن انسداداً ونتقدم إلى موعد الجرعة: حساس التدفق يكشف الانحراف ويوقف التوصيل ويُنبّه.', f: async () => { tab = 'device'; env.S.device.faults.occlusion = true; const nd = E.nextDose(env.gate.s.plan, env.S.clock.now); if (nd) E.advance(env, nd.t + 6 * U.MIN); } }
+  ];
+  function drawTour() {
+    const el = $('#tour'); if (tourI < 0) { el.hidden = true; return; }
+    const s = TOUR[tourI];
+    el.hidden = false;
+    el.innerHTML = '<b>' + (tourI + 1) + '/' + TOUR.length + ' · ' + esc(s.t) + '</b><p>' + esc(s.x) + '</p><div class="row"><button class="btn sm" data-act="tourNext">' + (tourI === TOUR.length - 1 ? 'إنهاء' : 'التالي') + '</button><button class="btn sec sm" data-act="tourPrev">السابق</button><button class="btn sec sm" data-act="tourClose">إغلاق</button></div>';
+  }
+  async function tourStep(dir) {
+    if (dir > 0 && tourI === TOUR.length - 1) { tourI = -1; drawTour(); return; }
+    tourI = Math.max(0, tourI + dir);
+    flash = {}; await TOUR[tourI].f(); save(); render(); drawTour();
+  }
+  async function startTour() { tourI = -1; await tourStep(1); }
+
+  // ---------- الإقلاع ----------
+  async function boot() {
+    try {
+      if (!OvaCrypto.available()) throw new Error('WebCrypto غير متاح في هذا المتصفح/السياق. افتحي الصفحة عبر https أو localhost.');
+      const saved = load();
+      env = saved ? E.attach(saved) : await E.seedDemo(Date.now());
+      if (!saved) save();
+      render();
+      timer = setInterval(tick, 1000);
+    } catch (e) {
+      $('#view').innerHTML = '<div class="alert danger">تعذّر تشغيل التطبيق: ' + esc(e.message) + '</div>';
+      console.error(e);
+    }
+  }
+
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-act]');
+    if (!b || b.type === 'checkbox') return;
+    act(b.dataset.act, b).catch(err => { console.error(err); setFlash('home', 'خطأ: ' + esc(err.message), 'danger'); });
+  });
+  document.addEventListener('change', e => {
+    const t = e.target;
+    if (t.id === 'scale') { env.S.clock.scale = Number(t.value); save(); return; }
+    if (t.dataset && t.dataset.act === 'fault') { act('fault', t); return; }
+    if (t.dataset && t.dataset.twin) {
+      const tw = env.S.twin;
+      tw.deficit = num('t-def'); tw.act = num('t-act'); tw.adh = num('t-adh'); tw.horizon = num('t-hor'); tw.fgAssumption = num('t-ass') || 0;
+      save(); render();
+    }
+  });
+  document.addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset && t.dataset.out) { const o = document.getElementById(t.dataset.out); if (o) o.textContent = t.value; }
+  });
+  document.addEventListener('submit', e => {
+    if (e.target.id === 'chatform') { e.preventDefault(); const i = $('#chat-in'); const q = i.value; i.value = ''; ask(q); }
+  });
+  window.addEventListener('beforeunload', () => { try { if (env) save(); } catch (e) { } });
+  window.__ova = { get env() { return env; } };
+  boot();
+})();
+</script>
+</body></html>
