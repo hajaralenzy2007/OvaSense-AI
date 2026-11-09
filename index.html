@@ -61,6 +61,13 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:8px 10px;
 .msg.b{align-self:flex-end;background:var(--card-s);border:1px solid var(--line);border-end-start-radius:6px}
 .msg.b.warn{border-color:var(--warn)}.msg.b.danger{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 10%,var(--card-s))}
 .msg small{display:block;color:var(--mut);margin-top:4px;font-size:11px}
+.chip.on{background:var(--band);border-color:var(--pri);color:var(--pri-d);font-weight:600}
+.recipe{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:var(--card-s)}.recipe h4{margin:0 0 4px;font-size:16px}.recipe .why{margin:6px 0;padding-inline-start:18px}.recipe .miss{color:var(--warn)}
+.body3d{display:grid;grid-template-columns:minmax(260px,1fr) minmax(280px,1.1fr);gap:14px;align-items:start}@media(max-width:760px){.body3d{grid-template-columns:1fr}}
+.holo{width:100%;max-width:420px;aspect-ratio:3/4;display:block;margin:auto;border-radius:18px;background:#03070d;touch-action:none;cursor:grab;box-shadow:0 0 0 1px rgba(45,212,200,.25),0 12px 40px rgba(45,212,200,.15)}
+.xray[hidden]{display:none}.xray{width:100%;max-width:260px;border-radius:14px;display:block;margin:8px auto;background:#03070d}
+.legend3d{display:flex;gap:12px;justify-content:center;font-size:12px;color:var(--mut);margin-top:6px}.legend3d i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-inline-end:4px}
+.deltas td.dn{color:var(--ok);font-weight:600}.deltas td.up{color:var(--warn)}
 .chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 13px;cursor:pointer;font-size:13px;transition:.15s}.chip:hover{border-color:var(--pri);color:var(--pri-d)}
 .bar{height:10px;border-radius:99px;background:color-mix(in srgb,var(--mut) 20%,transparent);overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--g1),var(--g2));border-radius:99px}
 .tour{position:fixed;bottom:calc(86px + env(safe-area-inset-bottom,0px));inset-inline:12px;max-width:520px;margin-inline:auto;background:var(--card-s);border:1px solid var(--pri);border-radius:18px;padding:14px;box-shadow:0 18px 50px rgba(0,0,0,.35),var(--glow);z-index:30}
@@ -981,6 +988,323 @@ textarea{font:inherit;color:inherit;background:var(--inp);border:1px solid var(-
   if (typeof module !== 'undefined' && module.exports) module.exports = T;
 })(globalThis);
 </script>
+<script>/* OvaKitchen — وجبة من المكوّنات الموجودة: تسجّل المريضة ما لديها، فتقترح وصفات تناسب خطتها اليومية.
+   قواعد محلية فقط (لا خادم). القيم الغذائية تقريبية لكل حصة وتحتاج مراجعة أخصائية تغذية. */
+(function (g) {
+  'use strict';
+  const U = g.OvaUtil;
+  const K = {};
+
+  // المكوّنات: id، الاسم، ومرادفات للبحث
+  K.INGREDIENTS = [
+    { id: 'egg', ar: 'بيض', syn: ['بيض', 'بيضه', 'بيضة', 'egg'] },
+    { id: 'chicken', ar: 'دجاج', syn: ['دجاج', 'صدر دجاج', 'فراخ', 'chicken'] },
+    { id: 'fish', ar: 'سمك', syn: ['سمك', 'هامور', 'سلمون', 'fish'] },
+    { id: 'tuna', ar: 'تونة', syn: ['تونه', 'تونة', 'tuna'] },
+    { id: 'meat', ar: 'لحم', syn: ['لحم', 'لحمه', 'لحم احمر', 'مفروم', 'meat'] },
+    { id: 'lentil', ar: 'عدس', syn: ['عدس', 'lentil'] },
+    { id: 'chickpea', ar: 'حمص', syn: ['حمص', 'chickpea'] },
+    { id: 'beans', ar: 'فول', syn: ['فول', 'فاصوليا', 'beans'] },
+    { id: 'oats', ar: 'شوفان', syn: ['شوفان', 'oats'] },
+    { id: 'brownrice', ar: 'أرز بني', syn: ['رز بني', 'ارز بني', 'brown rice'] },
+    { id: 'rice', ar: 'أرز أبيض', syn: ['رز', 'ارز', 'رز ابيض', 'ارز ابيض', 'rice'] },
+    { id: 'quinoa', ar: 'كينوا', syn: ['كينوا', 'quinoa'] },
+    { id: 'bread', ar: 'خبز بر', syn: ['خبز', 'خبز بر', 'خبز اسمر', 'توست', 'bread'] },
+    { id: 'sweetpotato', ar: 'بطاطا حلوة', syn: ['بطاطا حلوه', 'بطاطا حلوة', 'sweet potato'] },
+    { id: 'potato', ar: 'بطاطس', syn: ['بطاطس', 'بطاطا', 'potato'] },
+    { id: 'yogurt', ar: 'زبادي', syn: ['زبادي', 'لبن', 'روب', 'yogurt'] },
+    { id: 'labneh', ar: 'لبنة', syn: ['لبنه', 'لبنة'] },
+    { id: 'cheese', ar: 'جبن', syn: ['جبن', 'جبنه', 'جبن قريش', 'فيتا', 'cheese'] },
+    { id: 'milk', ar: 'حليب', syn: ['حليب', 'milk'] },
+    { id: 'tomato', ar: 'طماطم', syn: ['طماطم', 'بندوره', 'tomato'] },
+    { id: 'cucumber', ar: 'خيار', syn: ['خيار', 'cucumber'] },
+    { id: 'onion', ar: 'بصل', syn: ['بصل', 'onion'] },
+    { id: 'garlic', ar: 'ثوم', syn: ['ثوم', 'garlic'] },
+    { id: 'spinach', ar: 'سبانخ', syn: ['سبانخ', 'spinach'] },
+    { id: 'lettuce', ar: 'خس', syn: ['خس', 'جرجير', 'lettuce'] },
+    { id: 'pepper', ar: 'فلفل رومي', syn: ['فلفل', 'فلفل رومي', 'فلفل الوان', 'pepper'] },
+    { id: 'zucchini', ar: 'كوسة', syn: ['كوسه', 'كوسا', 'كوسة', 'zucchini'] },
+    { id: 'eggplant', ar: 'باذنجان', syn: ['باذنجان', 'eggplant'] },
+    { id: 'carrot', ar: 'جزر', syn: ['جزر', 'carrot'] },
+    { id: 'broccoli', ar: 'بروكلي', syn: ['بروكلي', 'قرنبيط', 'زهره', 'broccoli'] },
+    { id: 'mushroom', ar: 'فطر', syn: ['فطر', 'مشروم', 'mushroom'] },
+    { id: 'lemon', ar: 'ليمون', syn: ['ليمون', 'lemon'] },
+    { id: 'oliveoil', ar: 'زيت زيتون', syn: ['زيت زيتون', 'زيت', 'olive oil'] },
+    { id: 'nuts', ar: 'مكسرات', syn: ['مكسرات', 'لوز', 'جوز', 'عين جمل', 'nuts'] },
+    { id: 'apple', ar: 'تفاح', syn: ['تفاح', 'تفاحه', 'apple'] },
+    { id: 'banana', ar: 'موز', syn: ['موز', 'banana'] },
+    { id: 'berries', ar: 'توت', syn: ['توت', 'فراوله', 'فراولة', 'berries'] },
+    { id: 'dates', ar: 'تمر', syn: ['تمر', 'dates'] },
+    { id: 'chia', ar: 'بذور الشيا', syn: ['شيا', 'بذور الشيا', 'chia'] },
+    { id: 'tahini', ar: 'طحينة', syn: ['طحينه', 'طحينة', 'tahini'] }
+  ];
+  // مكونات أساسية تُفترض متوفرة دائماً (بهارات/ملح/ماء)
+  K.STAPLES = ['ملح وبهارات', 'ماء'];
+
+  // slot: b فطور، l غداء/عشاء، s خفيفة. need: مكونات أساسية، opt: اختيارية. القيم لحصة واحدة (تقريبية).
+  K.RECIPES = [
+    { id: 'shakshuka', ar: 'شكشوكة بالخضار', slot: 'b', need: ['egg', 'tomato'], opt: ['onion', 'pepper', 'spinach', 'oliveoil', 'bread'], kcal: 260, carb: 14, protein: 15, fiber: 4, gi: 'منخفض', steps: 'شوّحي البصل والفلفل بملعقة صغيرة زيت، أضيفي الطماطم 5 دقائق ثم البيض وغطّي حتى ينضج.' },
+    { id: 'omelette', ar: 'أومليت سبانخ وفطر', slot: 'b', need: ['egg'], opt: ['spinach', 'mushroom', 'cheese', 'onion', 'oliveoil'], kcal: 220, carb: 5, protein: 16, fiber: 2, gi: 'منخفض', steps: 'اخفقي بيضتين، أضيفي الخضار المقطعة، واطهي على نار هادئة.' },
+    { id: 'oats_bowl', ar: 'شوفان بالزبادي والتوت', slot: 'b', need: ['oats'], opt: ['yogurt', 'milk', 'berries', 'chia', 'nuts', 'apple'], kcal: 290, carb: 40, protein: 13, fiber: 7, gi: 'منخفض', steps: 'انقعي نصف كوب شوفان في حليب أو زبادي، وأضيفي التوت والشيا. تجنبي السكر المضاف.' },
+    { id: 'foul_plate', ar: 'فول بزيت الزيتون والخضار', slot: 'b', need: ['beans'], opt: ['tomato', 'cucumber', 'lemon', 'oliveoil', 'bread', 'garlic'], kcal: 280, carb: 33, protein: 13, fiber: 10, gi: 'منخفض', steps: 'سخّني الفول مع الثوم والليمون، وأضيفي ملعقة صغيرة زيت زيتون وخضاراً طازجة.' },
+    { id: 'labneh_plate', ar: 'لبنة مع خضار وخبز بر', slot: 'b', need: ['labneh'], opt: ['cucumber', 'tomato', 'bread', 'oliveoil', 'egg'], kcal: 240, carb: 22, protein: 12, fiber: 4, gi: 'منخفض', steps: 'قدّمي ملعقتين لبنة مع شريحة خبز بر وخضار طازجة.' },
+    { id: 'chicken_quinoa', ar: 'صدر دجاج مع كينوا وخضار', slot: 'l', need: ['chicken'], opt: ['quinoa', 'brownrice', 'broccoli', 'carrot', 'zucchini', 'lemon', 'garlic', 'oliveoil'], kcal: 450, carb: 38, protein: 38, fiber: 7, gi: 'منخفض', steps: 'اشوي الدجاج بالليمون والثوم، وقدّميه مع نصف كوب كينوا وطبق خضار مطهوة على البخار.' },
+    { id: 'fish_veg', ar: 'سمك مشوي مع خضار وبطاطا حلوة', slot: 'l', need: ['fish'], opt: ['sweetpotato', 'zucchini', 'pepper', 'lemon', 'garlic', 'oliveoil', 'lettuce'], kcal: 420, carb: 34, protein: 32, fiber: 6, gi: 'منخفض', steps: 'اشوي السمك بالليمون، والبطاطا الحلوة شرائح في الفرن، مع سلطة.' },
+    { id: 'lentil_soup', ar: 'شوربة عدس بالخضار', slot: 'l', need: ['lentil'], opt: ['onion', 'carrot', 'garlic', 'lemon', 'tomato', 'zucchini'], kcal: 300, carb: 42, protein: 18, fiber: 14, gi: 'منخفض', steps: 'اسلقي العدس مع البصل والجزر والثوم 25 دقيقة، واخلطيها وأضيفي الليمون.' },
+    { id: 'chickpea_salad', ar: 'سلطة حمص وتونة', slot: 'l', need: ['chickpea'], opt: ['tuna', 'cucumber', 'tomato', 'lettuce', 'lemon', 'oliveoil', 'onion'], kcal: 380, carb: 34, protein: 28, fiber: 10, gi: 'منخفض', steps: 'اخلطي الحمص المسلوق مع التونة والخضار، وتبّلي بالليمون وملعقة صغيرة زيت.' },
+    { id: 'tuna_salad', ar: 'سلطة تونة خضراء', slot: 'l', need: ['tuna'], opt: ['lettuce', 'cucumber', 'tomato', 'lemon', 'oliveoil', 'egg', 'bread'], kcal: 300, carb: 12, protein: 30, fiber: 4, gi: 'منخفض', steps: 'صفّي التونة واخلطيها مع الخضار والليمون. أضيفي بيضة مسلوقة لبروتين أعلى.' },
+    { id: 'meat_eggplant', ar: 'مسقعة خفيفة باللحم والباذنجان', slot: 'l', need: ['meat', 'eggplant'], opt: ['tomato', 'onion', 'garlic', 'pepper', 'oliveoil'], kcal: 430, carb: 20, protein: 30, fiber: 8, gi: 'منخفض', steps: 'اشوي الباذنجان في الفرن بدل قليه، واطهي اللحم المفروم قليل الدهن مع الطماطم، ثم اجمعيهما.' },
+    { id: 'stir_fry', ar: 'دجاج مقلّب بالخضار مع أرز بني', slot: 'l', need: ['chicken', 'brownrice'], opt: ['broccoli', 'pepper', 'carrot', 'mushroom', 'garlic', 'onion'], kcal: 470, carb: 45, protein: 36, fiber: 6, gi: 'متوسط', steps: 'قلّبي الدجاج والخضار بملعقة صغيرة زيت على نار عالية، وقدّميه مع نصف كوب أرز بني.' },
+    { id: 'stuffed_zucchini', ar: 'كوسة محشية بالعدس', slot: 'l', need: ['zucchini', 'lentil'], opt: ['tomato', 'onion', 'garlic', 'rice'], kcal: 340, carb: 44, protein: 16, fiber: 11, gi: 'منخفض', steps: 'احشي الكوسة بالعدس المطبوخ والطماطم، واخبزيها 30 دقيقة.' },
+    { id: 'yogurt_snack', ar: 'زبادي مع مكسرات وتوت', slot: 's', need: ['yogurt'], opt: ['nuts', 'berries', 'chia', 'apple'], kcal: 200, carb: 18, protein: 12, fiber: 3, gi: 'منخفض', steps: 'كوب زبادي سادة مع حفنة صغيرة مكسرات وتوت.' },
+    { id: 'apple_tahini', ar: 'تفاح مع طحينة', slot: 's', need: ['apple'], opt: ['tahini', 'nuts'], kcal: 180, carb: 26, protein: 4, fiber: 5, gi: 'منخفض', steps: 'شرائح تفاح مع ملعقة صغيرة طحينة. البروتين والدهون الصحية تبطئ امتصاص السكر.' },
+    { id: 'veg_sticks', ar: 'أصابع خضار مع حمص مهروس', slot: 's', need: ['chickpea'], opt: ['carrot', 'cucumber', 'tahini', 'lemon', 'garlic'], kcal: 170, carb: 18, protein: 7, fiber: 6, gi: 'منخفض', steps: 'اهرسي الحمص بالطحينة والليمون، وقدّميه مع جزر وخيار.' },
+    { id: 'dates_nuts', ar: 'تمرتان مع لوز', slot: 's', need: ['dates'], opt: ['nuts', 'milk'], kcal: 190, carb: 30, protein: 4, fiber: 4, gi: 'متوسط', steps: 'تمرتان مع 6–8 حبات لوز لتخفيف ارتفاع السكر.' }
+  ];
+
+  K.SLOTS = { b: 'الفطور', l: 'الغداء أو العشاء', s: 'وجبة خفيفة' };
+
+  // تحويل نص حر إلى مكونات معروفة
+  K.parse = function (text) {
+    const parts = String(text || '').split(/[،,\n؛;+]/).map(s => U.normAr(s).trim()).filter(Boolean);
+    const ids = new Set(), unknown = [];
+    const lookup = phrase => K.INGREDIENTS.find(i => i.syn.some(s => U.normAr(s) === phrase));
+    parts.forEach(p => {
+      // كلمات مفصولة بمسافة أو «و»؛ نطابق العبارات الأطول أولاً حتى لا تُحسب «رز بني» كـ«رز»
+      const w = p.split(/\s+/).filter(x => x && x !== 'و').map(x => x.length > 2 && x[0] === 'و' && !lookup(x) && K.INGREDIENTS.some(i => i.syn.some(s => U.normAr(s).split(' ')[0] === x.slice(1))) ? x.slice(1) : x);
+      let i = 0;
+      while (i < w.length) {
+        let hit = null, len = 0;
+        for (let n = Math.min(3, w.length - i); n >= 1 && !hit; n--) { const ing = lookup(w.slice(i, i + n).join(' ')); if (ing) { hit = ing; len = n; } }
+        if (hit) { ids.add(hit.id); i += len; } else { unknown.push(w[i]); i++; }
+      }
+    });
+    return { ids: [...ids], unknown };
+  };
+
+  // هدف السعرات للوجبة من الخطة اليومية
+  K.slotTarget = function (plan, slot) {
+    if (!plan || !plan.meals) return null;
+    const m = slot === 'b' ? plan.meals.filter(x => x.slot === 'b') : slot === 's' ? plan.meals.filter(x => x.slot === 's1' || x.slot === 's2') : plan.meals.filter(x => x.slot === 'l' || x.slot === 'd');
+    if (!m.length) return null;
+    return Math.round(m.reduce((a, x) => a + x.kcal, 0) / m.length);
+  };
+
+  // اقتراح وصفات: كل المكونات الأساسية متوفرة، أو ينقص مكوّن واحد فقط (يُذكر)
+  K.suggest = function (have, opts) {
+    opts = opts || {};
+    const H = new Set(have || []), out = [];
+    K.RECIPES.forEach(r => {
+      if (opts.slot && opts.slot !== 'any' && r.slot !== opts.slot) return;
+      const missing = r.need.filter(n => !H.has(n));
+      if (missing.length > 1 || (missing.length === 1 && r.need.length === 1)) return;
+      const used = r.need.filter(n => H.has(n)).concat(r.opt.filter(n => H.has(n)));
+      const optCover = r.opt.length ? r.opt.filter(n => H.has(n)).length / r.opt.length : 1;
+      const target = opts.plan ? K.slotTarget(opts.plan, r.slot) : null;
+      const servings = target ? U.clamp(Math.round(target / r.kcal * 4) / 4, 0.5, 1.5) : 1;
+      const why = [];
+      if (r.gi === 'منخفض') why.push('مؤشر جلايسيمي منخفض يساعد على ثبات السكر');
+      if (r.fiber * servings >= 6) why.push('غنية بالألياف (' + U.round(r.fiber * servings, 1) + ' جم)');
+      if (r.protein * servings >= (r.slot === 's' ? 8 : 20)) why.push('بروتين كافٍ (' + U.round(r.protein * servings, 1) + ' جم) يطيل الشبع');
+      if (target) why.push('الحصة مضبوطة على هدف ' + K.SLOTS[r.slot] + ' في خطتك (~' + target + ' سعراً)');
+      let score = (missing.length ? 0 : 50) + optCover * 25 + (r.gi === 'منخفض' ? 15 : 0) + Math.min(10, r.fiber);
+      out.push({ id: r.id, ar: r.ar, slot: r.slot, slotAr: K.SLOTS[r.slot], missing: missing.map(id => K.name(id)), used: used.map(id => K.name(id)), extra: r.opt.filter(n => !H.has(n)).slice(0, 3).map(id => K.name(id)), servings,
+        kcal: Math.round(r.kcal * servings), carb: U.round(r.carb * servings, 1), protein: U.round(r.protein * servings, 1), fiber: U.round(r.fiber * servings, 1), gi: r.gi, steps: r.steps, why, score: U.round(score, 1) });
+    });
+    return out.sort((a, b) => b.score - a.score).slice(0, opts.limit || 3);
+  };
+
+  K.name = id => { const i = K.INGREDIENTS.find(x => x.id === id); return i ? i.ar : id; };
+
+  g.OvaKitchen = K;
+  if (typeof module !== 'undefined' && module.exports) module.exports = K;
+})(globalThis);
+</script>
+<script>/* OvaBody — توأم الجسم ثلاثي الأبعاد: قياسات المريضة ← مجسّم سلكي يشبه نسبها، وإسقاط زمني لتغيّر القياسات
+   والهيئة لو التزمت بالخطة الغذائية والرياضية (من مسار الوزن في OvaTwin).
+   - افتراضات تعليمية (تقريبية): لكل 1 كغ نقص في الوزن ينقص الخصر ~1 سم، الورك ~0.7، الصدر ~0.6، الفخذ ~0.5، الذراع ~0.3.
+   - المسح بالكاميرا يتم داخل الجهاز فقط: تُحوَّل الصورة فوراً إلى ظلّ (Silhouette) بخطوط تشبه الأشعة،
+     ولا تُعرض الصورة ولا تُحفظ ولا تُرسل. يُحفظ فقط نسب عرض الكتفين/الخصر/الورك. */
+(function (g) {
+  'use strict';
+  const U = g.OvaUtil;
+  const B = {};
+
+  B.FIELDS = [
+    { k: 'heightCm', ar: 'الطول', unit: 'سم', min: 120, max: 220 },
+    { k: 'weightKg', ar: 'الوزن', unit: 'كغ', min: 30, max: 250 },
+    { k: 'bust', ar: 'الصدر', unit: 'سم', min: 60, max: 180 },
+    { k: 'waist', ar: 'الخصر', unit: 'سم', min: 45, max: 180 },
+    { k: 'hip', ar: 'الورك', unit: 'سم', min: 60, max: 200 },
+    { k: 'thigh', ar: 'الفخذ', unit: 'سم', min: 30, max: 100 },
+    { k: 'arm', ar: 'الذراع', unit: 'سم', min: 18, max: 60 }
+  ];
+  // تغيّر المحيط (سم) لكل 1 كغ تغيّر في الوزن — افتراض تعليمي تقريبي
+  B.CM_PER_KG = { bust: 0.6, waist: 1.0, hip: 0.7, thigh: 0.5, arm: 0.3 };
+  B.UNITS = { d: { ar: 'أيام', days: 1, max: 30 }, w: { ar: 'أسابيع', days: 7, max: 24 }, m: { ar: 'أشهر', days: 30, max: 12 } };
+
+  // قيم ابتدائية تقديرية من الطول والوزن إن لم تُدخل المريضة قياساتها
+  B.defaults = function (heightCm, weightKg) {
+    const bmi = weightKg / Math.pow(heightCm / 100, 2);
+    const f = U.clamp((bmi - 22) / 10, -0.5, 2);
+    return { heightCm, weightKg, bust: U.round(88 + 9 * f), waist: U.round(72 + 13 * f), hip: U.round(97 + 10 * f), thigh: U.round(54 + 6 * f), arm: U.round(27 + 4 * f), estimated: true };
+  };
+
+  B.validate = function (m) {
+    const bad = B.FIELDS.filter(f => !(Number(m[f.k]) >= f.min && Number(m[f.k]) <= f.max)).map(f => f.ar);
+    if (!bad.length && m.waist >= m.hip * 1.4) bad.push('الخصر/الورك');
+    return bad;
+  };
+
+  B.ratios = function (m) {
+    const whr = U.round(m.waist / m.hip, 2), whtr = U.round(m.waist / m.heightCm, 2), bmi = U.round(m.weightKg / Math.pow(m.heightCm / 100, 2), 1);
+    return { whr, whtr, bmi, whrHigh: whr >= 0.85, whtrHigh: whtr >= 0.5 };
+  };
+
+  // قياسات اليوم d حسب مسار الوزن (مصفوفتا days وweight من OvaTwin)
+  B.atDay = function (m, days, weights, d) {
+    let i = 0; while (i < days.length - 1 && days[i + 1] < d) i++;
+    const j = Math.min(i + 1, days.length - 1), span = days[j] - days[i] || 1, f = U.clamp((d - days[i]) / span, 0, 1);
+    const w = weights[i] + (weights[j] - weights[i]) * f, dw = w - weights[0];
+    const o = { heightCm: m.heightCm, weightKg: U.round(m.weightKg + dw, 1) };
+    Object.keys(B.CM_PER_KG).forEach(k => { o[k] = U.round(Math.max(m[k] * 0.75, m[k] + B.CM_PER_KG[k] * dw), 1); });
+    return o;
+  };
+
+  B.project = function (m, twinRes, unit, n) {
+    const d = (B.UNITS[unit] || B.UNITS.w).days * n;
+    const now = B.atDay(m, twinRes.days, twinRes.weight.mid, 0), at = B.atDay(m, twinRes.days, twinRes.weight.mid, d);
+    // نتجاوز الأفق إن طُلب أكثر منه (نثبّت عند آخر نقطة)
+    const delta = {}; Object.keys(at).forEach(k => delta[k] = U.round(at[k] - now[k], 1));
+    return { day: d, now, at, delta, ratiosNow: B.ratios(now), ratiosAt: B.ratios(at), capped: d > twinRes.days[twinRes.days.length - 1] };
+  };
+
+  // نصف قطر قطع ناقص (a) من المحيط ونسبة العمق k=b/a (تقريب رامانوجان)
+  B.semiAxis = (C, k) => C / (Math.PI * (3 * (1 + k) - Math.sqrt((3 + k) * (1 + 3 * k))));
+
+  // حلقات المقطع العرضي (سم). كل حلقة: y نسبة من الطول، rx/rz نصفا القطر، cx/cz إزاحة المركز. shape: نسب من المسح (اختياري)
+  B.rings = function (m, shape) {
+    const H = m.heightCm, s = shape || {};
+    const sh = s.shoulder || 1, wa = s.waist || 1, hi = s.hip || 1;
+    const E = (y, C, k, o) => { const a = B.semiAxis(C, k); return Object.assign({ y, rx: a, rz: a * k, cx: 0, cz: 0 }, o || {}); };
+    const sx = (r, f) => { r.rx *= f; return r; };
+    const torso = [
+      sx(E(0.455, m.hip * 0.9, 0.7), hi), sx(E(0.49, m.hip, 0.74, { cz: -1.2 }), hi), sx(E(0.53, m.hip * 0.97, 0.74, { cz: -0.8 }), hi),
+      sx(E(0.57, (m.hip + m.waist) / 2, 0.76), (hi + wa) / 2), sx(E(0.61, m.waist, 0.78), wa), sx(E(0.645, (m.waist + m.bust) / 2 * 0.96, 0.75), (wa + sh) / 2),
+      sx(E(0.675, m.bust * 0.9, 0.7), sh), sx(E(0.705, m.bust, 0.72, { cz: 1.6 }), sh), sx(E(0.74, m.bust * 0.95, 0.6, { cz: 0.6 }), sh),
+      sx(E(0.775, m.bust * 0.97, 0.48), sh), sx(E(0.80, m.bust * 0.78, 0.55), sh), E(0.82, 37, 0.9), E(0.85, 32, 0.92)
+    ];
+    const hipA = B.semiAxis(m.hip, 0.74) * hi, legX = hipA * 0.52;
+    const leg = [[0.47, 1, 1], [0.42, 0.92, 0.98], [0.36, 0.8, 0.92], [0.30, 0.66, 0.86], [0.275, 0.6, 0.84], [0.22, 0.64, 0.82], [0.15, 0.55, 0.8], [0.08, 0.4, 0.78], [0.04, 0.38, 0.78]]
+      .map(([y, f, xo]) => E(y, m.thigh * f, 0.95, { cx: legX * xo }));
+    const shA = B.semiAxis(m.bust * 0.97, 0.48) * sh, armR = B.semiAxis(m.arm, 0.95);
+    const arm = [[0.785, 1.02], [0.74, 1], [0.69, 0.9], [0.635, 0.78], [0.6, 0.72], [0.55, 0.66], [0.5, 0.56], [0.47, 0.52], [0.44, 0.6]]
+      .map(([y, f]) => E(y, m.arm * f, 0.95, { cx: shA + armR * 0.9 + (0.785 - y) * H * 0.17 }));
+    const head = []; for (let i = 0; i <= 12; i++) { const t = i / 12, r = Math.sqrt(Math.max(0, 1 - Math.pow(2 * t - 1, 2))) * 9.8 + 0.3; head.push({ y: 0.858 + t * 0.142, rx: r * 0.84, rz: r, cx: 0, cz: 0.6 }); }
+    return { H, torso, leg, arm, head };
+  };
+
+  // ---------------- رسم المجسّم على Canvas (متصفح فقط) ----------------
+  B.draw = function (cv, models, angle) {
+    const ctx = cv.getContext('2d'), W = cv.width, Hh = cv.height;
+    ctx.clearRect(0, 0, W, Hh);
+    const bg = ctx.createRadialGradient(W / 2, Hh * 0.45, 10, W / 2, Hh * 0.5, Hh * 0.75);
+    bg.addColorStop(0, '#0d2233'); bg.addColorStop(1, '#03070d'); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, Hh);
+    ctx.strokeStyle = 'rgba(45,212,200,.08)'; ctx.lineWidth = 1;
+    for (let y = 0; y < Hh; y += 16) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    const maxH = Math.max(...models.map(o => o.rings.H));
+    const sc = (Hh * 0.86) / maxH, cx = W / 2, base = Hh * 0.95;
+    const ca = Math.cos(angle), sa = Math.sin(angle);
+    const P = (x, y, z) => { const X = x * ca + z * sa, Z = -x * sa + z * ca; return [cx + X * sc, base - y * sc, Z]; };
+    models.forEach(o => {
+      const R = o.rings, H = R.H, col = o.color, seg = 28;
+      ctx.lineWidth = o.width || 1.2; ctx.strokeStyle = col; ctx.shadowColor = col; ctx.shadowBlur = o.glow || 8; ctx.globalAlpha = o.alpha == null ? 1 : o.alpha;
+      const part = (rings, mir, mer) => {
+        const pts = rings.map(r => { const a = []; for (let i = 0; i < seg; i++) { const t = i / seg * 2 * Math.PI; a.push(P(mir * (r.cx || 0) + r.rx * Math.cos(t), r.y * H, (r.cz || 0) + r.rz * Math.sin(t))); } return a; });
+        pts.forEach(ring => { ctx.beginPath(); ring.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.stroke(); });
+        for (let i = 0; i < seg; i += mer) { ctx.beginPath(); pts.forEach((ring, j) => j ? ctx.lineTo(ring[i][0], ring[i][1]) : ctx.moveTo(ring[i][0], ring[i][1])); ctx.stroke(); }
+      };
+      part(R.torso, 1, 4); part(R.head, 1, 4);
+      part(R.leg, -1, 4); part(R.leg, 1, 4);
+      part(R.arm, -1, 7); part(R.arm, 1, 7);
+      ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+    });
+    // خطوط مستويات القياس
+    const top = models[0].rings;
+    [['الصدر', 0.705], ['الخصر', 0.61], ['الورك', 0.49], ['الفخذ', 0.43]].forEach(([t, y]) => {
+      const py = base - y * top.H * sc; ctx.strokeStyle = 'rgba(255,111,165,.35)'; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(cx - W * 0.33, py); ctx.lineTo(cx + W * 0.33, py); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(255,170,205,.85)'; ctx.font = '11px "IBM Plex Sans Arabic",sans-serif'; ctx.textAlign = 'right'; ctx.fillText(t, W - 8, py - 3);
+    });
+  };
+
+  // ---------------- المسح بالكاميرا مع حفظ الخصوصية ----------------
+  // يحوّل الصورة إلى قناع ظلّ: يقدّر لون الخلفية من الحواف، ويعزل ما يختلف عنها. لا يُعاد أي بكسل من الصورة.
+  B.silhouette = function (data, w, h) {
+    const lum = new Float32Array(w * h), R = new Float32Array(w * h), G = new Float32Array(w * h), Bl = new Float32Array(w * h);
+    for (let i = 0; i < w * h; i++) { R[i] = data[i * 4]; G[i] = data[i * 4 + 1]; Bl[i] = data[i * 4 + 2]; lum[i] = 0.299 * R[i] + 0.587 * G[i] + 0.114 * Bl[i]; }
+    // لون الخلفية: وسيط بكسلات الإطار الخارجي
+    const border = []; for (let x = 0; x < w; x++) { border.push(x, (h - 1) * w + x); } for (let y = 0; y < h; y++) { border.push(y * w, y * w + w - 1); }
+    const med = arr => { const s = arr.slice().sort((a, b) => a - b); return s[s.length >> 1]; };
+    const br = med(border.map(i => R[i])), bgc = med(border.map(i => G[i])), bb = med(border.map(i => Bl[i]));
+    const dists = border.map(i => Math.hypot(R[i] - br, G[i] - bgc, Bl[i] - bb));
+    const thr = Math.max(38, med(dists) * 3 + 18);
+    let mask = new Uint8Array(w * h);
+    for (let i = 0; i < w * h; i++) mask[i] = Math.hypot(R[i] - br, G[i] - bgc, Bl[i] - bb) > thr ? 1 : 0;
+    // تنظيف: إغلاق ثم فتح بسيط
+    const morph = (m, keep) => { const o = new Uint8Array(w * h); for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { let s = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) s += m[(y + dy) * w + x + dx]; o[y * w + x] = s >= keep ? 1 : 0; } return o; };
+    mask = morph(morph(mask, 3), 6);
+    // أكبر مكوّن متصل فقط (الجسم)
+    const lab = new Int32Array(w * h); let best = 0, bestN = 0, cur = 0;
+    for (let i = 0; i < w * h; i++) if (mask[i] && !lab[i]) {
+      cur++; let n = 0; const st = [i]; lab[i] = cur;
+      while (st.length) { const p = st.pop(); n++; const x = p % w, y = (p / w) | 0; [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => { const X = x + dx, Y = y + dy; if (X >= 0 && Y >= 0 && X < w && Y < h) { const q = Y * w + X; if (mask[q] && !lab[q]) { lab[q] = cur; st.push(q); } } }); }
+      if (n > bestN) { bestN = n; best = cur; }
+    }
+    for (let i = 0; i < w * h; i++) mask[i] = lab[i] === best ? 1 : 0;
+    const frac = bestN / (w * h);
+    // خط المنتصف من الصفوف العليا، ثم عرض «الجذع» = المقطع المتصل حول المنتصف (يستبعد الذراعين المنفصلتين)
+    let top = -1, bot = -1, sx = 0, sn = 0;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (mask[y * w + x]) { if (top < 0) top = y; bot = y; }
+    for (let y = top; y >= 0 && y < top + (bot - top) * 0.5; y++) for (let x = 0; x < w; x++) if (mask[y * w + x]) { sx += x; sn++; }
+    const cx0 = sn ? Math.round(sx / sn) : w >> 1;
+    const run = y => { y = U.clamp(Math.round(y), 0, h - 1); let c = cx0; if (!mask[y * w + c]) { let k = 1; while (k < w / 4 && !mask[y * w + c + k] && !mask[y * w + c - k]) k++; c = mask[y * w + c + k] ? c + k : c - k; if (!mask[y * w + c]) return 0; } let l = c, r = c; while (l > 0 && mask[y * w + l - 1]) l--; while (r < w - 1 && mask[y * w + r + 1]) r++; return r - l + 1; };
+    const ok = frac > 0.05 && frac < 0.85 && top >= 0 && bot - top > h * 0.4;
+    let shape = null;
+    if (ok) {
+      const L = bot - top, at = f => run(top + L * f);
+      const maxIn = (a, b) => { let mx = 0; for (let f = a; f <= b; f += 0.005) mx = Math.max(mx, at(f)); return mx; };
+      const minIn = (a, b) => { let mn = 1e9; for (let f = a; f <= b; f += 0.005) { const v = at(f); if (v) mn = Math.min(mn, v); } return mn === 1e9 ? 0 : mn; };
+      // من الأعلى: الكتفان 0.17–0.22، الخصر أضيق نقطة 0.33–0.45، الورك أعرض نقطة 0.45–0.55
+      const s = maxIn(0.17, 0.22), wa = minIn(0.33, 0.45), hp = maxIn(0.45, 0.55);
+      if (s && wa && hp) {
+        // مقارنة بنسب أنثوية نموذجية للعرض الأمامي: الكتفان/الورك ≈ 1.0، الخصر/الورك ≈ 0.75
+        shape = { shoulder: U.round(U.clamp((s / hp) / 1.0, 0.85, 1.15), 2), waist: U.round(U.clamp((wa / hp) / 0.75, 0.85, 1.15), 2), hip: 1 };
+      }
+    }
+    return { mask, ok, frac: U.round(frac, 3), shape, top, bot };
+  };
+
+  // رسم القناع كأشعة: حواف متوهجة + تدرّج داخلي، بلا أي بكسل من الصورة الأصلية
+  B.drawXray = function (cv, sil, w, h) {
+    const ctx = cv.getContext('2d'); cv.width = w * 2; cv.height = h * 2;
+    const img = ctx.createImageData(w, h), m = sil.mask;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = y * w + x, o = i * 4;
+      const edge = m[i] && (!m[i - 1] || !m[i + 1] || !m[i - w] || !m[i + w]);
+      let r = 3, gg = 8, b = 14, a = 255;
+      if (edge) { r = 120; gg = 255; b = 240; }
+      else if (m[i]) { const t = 0.35 + 0.25 * Math.sin(y / 3); r = 20 * t; gg = 120 * t; b = 140 * t; }
+      img.data[o] = r; img.data[o + 1] = gg; img.data[o + 2] = b; img.data[o + 3] = a;
+    }
+    const tmp = document.createElement('canvas'); tmp.width = w; tmp.height = h; tmp.getContext('2d').putImageData(img, 0, 0);
+    ctx.imageSmoothingEnabled = true; ctx.shadowColor = '#2dd4c8'; ctx.shadowBlur = 6; ctx.drawImage(tmp, 0, 0, w * 2, h * 2);
+    tmp.width = tmp.height = 0;
+  };
+
+  g.OvaBody = B;
+  if (typeof module !== 'undefined' && module.exports) module.exports = B;
+})(globalThis);
+</script>
 <script>/* OvaChat — مساعد محادثة محلي مرتبط ببيانات المريضة (قراءات، جرعات، تحاليل، نزيف، غذاء، توأم رقمي).
    صريح: ليس نموذج لغة مدرَّباً ولا يرسل بيانات لأي خادم؛ يفهم النوايا بالقواعد ويجيب من سجلها. */
 (function (g) {
@@ -1434,7 +1758,7 @@ textarea{font:inherit;color:inherit;background:var(--inp);border:1px solid var(-
 <script>/* واجهة OvaSense — عرض وتفاعل. المنطق في OvaEngine/OvaAI/OvaSecurity. */
 (function () {
   'use strict';
-  const U = OvaUtil, E = OvaEngine, AI = OvaAI, SEC = OvaSecurity, KB = OvaKB, TW = OvaTwin, CH = OvaChat;
+  const U = OvaUtil, E = OvaEngine, AI = OvaAI, SEC = OvaSecurity, KB = OvaKB, TW = OvaTwin, CH = OvaChat, KT = OvaKitchen, BD = OvaBody;
   const esc = U.esc, $ = s => document.querySelector(s);
   const LS = 'ovasense.v1';
   let env = null, tab = 'home', flash = {}, timer = null, dietSeed = 0, tourI = -1;
@@ -1560,8 +1884,34 @@ textarea{font:inherit;color:inherit;background:var(--inp);border:1px solid var(-
       plan.meals.map(m => '<tr><td><b>' + m.label + '</b></td><td>' + m.items.map(i => esc(i.ar) + (i.qty !== 1 ? ' ×' + i.qty : '') + ' <span class="small mut">(' + esc(i.serving) + ')</span>').join('<br>') + '</td><td>' + m.kcal + '</td><td>' + m.carb + ' جم</td></tr>').join('') +
       '</tbody></table></div><p><b>المجموع:</b> ' + plan.totals.kcal + ' سعراً · كربوهيدرات ' + plan.totals.carb + ' جم · بروتين ' + plan.totals.protein + ' جم · ألياف ' + plan.totals.fiber + ' جم</p>' +
       '<p class="small mut">' + plan.notes.map(esc).join(' ') + '</p><div class="row"><button class="btn sec sm" data-act="shuffleDiet">بدّلي الخيارات</button></div></div>' +
+      vKitchen(plan) +
       '<div class="card" style="margin-top:12px"><h3>سجّلي وجبة (تؤثر على نموذج الجلوكوز)</h3><div class="row"><label>الاسم<input id="ml-n" value="وجبة" style="width:140px"></label><label>كربوهيدرات (جم)<input id="ml-c" type="number" value="60" style="width:110px"></label><button class="btn" data-act="addMeal">تسجيل الآن</button></div></div>' +
       '<div class="card" style="margin-top:12px"><h3>مكمل أو عشب؟ اسألي قبل الاستخدام</h3><div class="row"><label>الاسم<input id="sp-q" placeholder="مثال: ميو إينوزيتول" style="width:220px"></label><label>أدويتي (اختياري)<input id="sp-m" value="' + esc(p.meds) + '" style="width:200px"></label><label><span>حامل؟</span><input id="sp-p" type="checkbox"' + (p.pregnant ? ' checked' : '') + '></label><label><span>ضغط مرتفع؟</span><input id="sp-h" type="checkbox"' + (p.hypertension ? ' checked' : '') + '></label><button class="btn" data-act="checkSupp">تحقق</button></div>' + fl('supp') + '<p class="small mut">محتوى تعليمي يحتاج مراجعة الطبيب/الصيدلي. إن لم أجد معلومة موثوقة لا أخمّن.</p></div>';
+  }
+
+  // ---------- وجبة من المكوّنات الموجودة ----------
+  function pantry() { const S = env.S; if (!S.pantry) S.pantry = { have: [], slot: 'any', res: null, unknown: [] }; return S.pantry; }
+  function vKitchen(plan) {
+    const pt = pantry(), H = new Set(pt.have);
+    const chips = KT.INGREDIENTS.map(i => '<button class="chip' + (H.has(i.id) ? ' on' : '') + '" data-act="pantryToggle" data-v="' + i.id + '" aria-pressed="' + H.has(i.id) + '">' + esc(i.ar) + '</button>').join(' ');
+    const res = pt.res ? KT.suggest(pt.have, { slot: pt.slot, plan, limit: 3 }) : null;
+    return '<div class="card" style="margin-top:12px" id="kitchen"><h3>وجبة من الموجود عندك</h3>' +
+      '<p class="small mut">سجّلي المكوّنات المتوفرة في مطبخك، وأقترح لك وجبة تناسب خطتك اليومية (سعرات الوجبة، مؤشر جلايسيمي منخفض، ألياف وبروتين).</p>' +
+      '<div class="row"><label>اكتبي المكوّنات<input id="pt-txt" placeholder="مثال: بيض، طماطم، بصل وسبانخ" style="width:260px"></label><button class="btn sec sm" data-act="pantryAdd">أضيفي</button>' +
+      '<label>الوجبة<select id="pt-slot">' + [['any', 'أي وجبة'], ['b', 'الفطور'], ['l', 'الغداء أو العشاء'], ['s', 'وجبة خفيفة']].map(o => '<option value="' + o[0] + '"' + (pt.slot === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></label>' +
+      '<button class="btn" data-act="suggestMeal">اقترحي وجبة</button>' + (pt.have.length ? '<button class="btn sec sm" data-act="pantryClear">مسح الكل</button>' : '') + '</div>' +
+      (pt.unknown && pt.unknown.length ? '<p class="small" style="color:var(--warn)">لم أتعرف على: ' + pt.unknown.map(esc).join('، ') + '</p>' : '') +
+      '<div style="margin-top:8px;line-height:2.2">' + chips + '</div>' +
+      '<p class="small mut">المختار: ' + (pt.have.length ? pt.have.map(id => esc(KT.name(id))).join('، ') : 'لا شيء بعد') + '</p>' + fl('kit') +
+      (res ? (res.length ? '<div class="grid g3" style="margin-top:8px">' + res.map(r =>
+        '<div class="recipe"><h4>' + esc(r.ar) + '</h4><div class="small mut">' + esc(r.slotAr) + ' · ' + (r.servings !== 1 ? r.servings + ' حصة · ' : '') + 'مؤشر جلايسيمي ' + esc(r.gi) + '</div>' +
+        '<p style="margin:6px 0"><b>' + r.kcal + '</b> سعراً · كربوهيدرات ' + r.carb + ' جم · بروتين ' + r.protein + ' جم · ألياف ' + r.fiber + ' جم</p>' +
+        '<div class="small">من مطبخك: ' + r.used.map(esc).join('، ') + '</div>' + (r.missing.length ? '<div class="small miss">ينقصك: ' + r.missing.map(esc).join('، ') + '</div>' : '') +
+        (r.extra.length ? '<div class="small mut">تحسّنها إضافة (اختياري): ' + r.extra.map(esc).join('، ') + '</div>' : '') +
+        '<ul class="why small">' + r.why.map(w => '<li>' + esc(w) + '</li>').join('') + '</ul><p class="small">' + esc(r.steps) + '</p>' +
+        '<button class="btn sm" data-act="logRecipe" data-n="' + esc(r.ar) + '" data-c="' + r.carb + '">سجّليها كوجبة</button></div>').join('') + '</div>'
+        : '<div class="alert warn" style="margin-top:8px">لا توجد وصفة مناسبة بالمكوّنات الحالية. أضيفي مصدر بروتين (بيض، دجاج، عدس، تونة) أو خضاراً.</div>') : '') +
+      '<p class="small mut">القيم تقريبية، والوصفات عامة تحتاج مراجعة أخصائية تغذية، خاصة مع الحمل أو أمراض الكلى.</p></div>';
   }
 
   function vSymptoms() {
@@ -1593,8 +1943,8 @@ textarea{font:inherit;color:inherit;background:var(--inp);border:1px solid var(-
     const sm = r.summary;
     const sc = TW.scenarios(bs);
     const sld = (id, label, min, max, step, v, unit) => '<label>' + label + ' (<output id="o-' + id + '">' + v + '</output> ' + unit + ')<input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + v + '" data-out="o-' + id + '" data-twin="1"></label>';
-    return '<h2>التوأم الرقمي · ماذا لو؟</h2>' +
-      '<div class="alert info">أداة تعليمية تعرض <b>نطاقاً محتملاً</b> لا وعداً. لا تتنبأ بالدورة الشهرية، ولا تقدّر الأعراض كمياً. بياناتك الحالية: وزن ' + bs.weightKg + ' كغ · سكر صائم ≈ ' + bs.fastingGlucose + ' ملغ/دل' + (bs.fastingInsulin != null ? ' · إنسولين صائم ' + bs.fastingInsulin : '') + '.</div>' +
+    return '<h2>التوأم الرقمي · ماذا لو؟</h2>' + vBody(d) +
+      '<div class="alert info" style="margin-top:12px">أداة تعليمية تعرض <b>نطاقاً محتملاً</b> لا وعداً. لا تتنبأ بالدورة الشهرية، ولا تقدّر الأعراض كمياً. بياناتك الحالية: وزن ' + bs.weightKg + ' كغ · سكر صائم ≈ ' + bs.fastingGlucose + ' ملغ/دل' + (bs.fastingInsulin != null ? ' · إنسولين صائم ' + bs.fastingInsulin : '') + '.</div>' +
       '<div class="card"><h3>سيناريوهات جاهزة</h3><div class="row">' + sc.map(s => '<button class="chip" data-act="preset" data-d="' + s.plan.deficitKcal + '" data-a="' + s.plan.activityMinPerWeek + '" data-p="' + Math.round(s.plan.adherence * 100) + '">' + esc(s.name) + '</button>').join('') + '</div>' +
       '<div class="grid g3" style="margin-top:8px">' + sld('t-def', 'عجز السعرات', 0, 600, 50, tw.deficit, 'سعر/يوم') + sld('t-act', 'نشاط', 0, 300, 30, tw.act, 'دقيقة/أسبوع') + sld('t-adh', 'الالتزام', 0, 100, 10, tw.adh, '%') +
       '<label>المدة<select id="t-hor" data-twin="1">' + [90, 180, 360].map(h => '<option' + (tw.horizon === h ? ' selected' : '') + '>' + h + '</option>').join('') + '</select></label>' +
@@ -1602,6 +1952,93 @@ textarea{font:inherit;color:inherit;background:var(--inp);border:1px solid var(-
       '<div class="grid g2" style="margin-top:12px"><div class="card"><h3>الوزن (كغ) · المحور الأفقي: الأيام</h3>' + w + '<p class="small mut">الخط المتصل = السيناريو · المتقطع = دون تغيير · النقطي = مرجع توضيحي من حالة واحدة منشورة (Shamanna 2025، −12.4% خلال 360 يوماً) وليس توقعاً لك.</p></div>' +
       '<div class="card"><h3>سكر الصيام (ملغ/دل) · المحور الأفقي: الأيام</h3>' + gl + '<p class="small mut">النطاق من فترات الثقة المنشورة (Domecq 2013): −2.3 (−4.5 إلى −0.1).</p></div></div>' +
       '<div class="card" style="margin-top:12px"><h3>الخلاصة بعد ' + sm.horizonDays + ' يوماً</h3><ul><li>الوزن ≈ <b>' + sm.weightEnd + ' كغ</b> (تغيّر ' + sm.weightDelta + '، نطاق ' + sm.weightBand[0] + ' – ' + sm.weightBand[1] + ')</li><li>سكر الصيام ≈ <b>' + sm.fgEnd + '</b> (نطاق ' + sm.fgBand[0] + ' – ' + sm.fgBand[1] + ')</li>' + (sm.homaEnd != null ? '<li>HOMA-IR: ' + sm.homaStart + ' ← ' + sm.homaEnd + '</li>' : '') + '</ul>' + '<p class="small mut">' + r.notes.map(esc).join(' · ') + '</p></div>';
+  }
+
+  // ---------- توأم الجسم ثلاثي الأبعاد ----------
+  function body(d) {
+    const S = env.S;
+    if (!S.body) S.body = { m: BD.defaults(S.patient.heightCm, d.weight), shape: null, unit: 'w', n: 12, scanAt: null };
+    return S.body;
+  }
+  function bodyProjection() {
+    const S = env.S, b = S.body, tw = S.twin, d = E.derive(env);
+    const res = TW.simulate({ weightKg: b.m.weightKg, heightCm: b.m.heightCm, fastingGlucose: d.twinBase.fastingGlucose, fastingInsulin: null, horizonDays: 365, stepDays: 1, deficitKcal: tw.deficit, activityMinPerWeek: tw.act, adherence: tw.adh / 100 });
+    return BD.project(b.m, res, b.unit, b.n);
+  }
+  function bodyTable(pr) {
+    const rows = BD.FIELDS.filter(f => f.k !== 'heightCm').map(f => { const dl = pr.delta[f.k]; return '<tr><td>' + f.ar + '</td><td>' + pr.now[f.k] + '</td><td><b>' + pr.at[f.k] + '</b></td><td class="' + (dl < 0 ? 'dn' : dl > 0 ? 'up' : '') + '">' + (dl > 0 ? '+' : '') + dl + ' ' + f.unit + '</td></tr>'; }).join('');
+    const rn = pr.ratiosNow, ra = pr.ratiosAt;
+    return '<table class="deltas"><thead><tr><th>القياس</th><th>الآن</th><th>المتوقع</th><th>التغيّر</th></tr></thead><tbody>' + rows +
+      '<tr><td>الخصر ÷ الطول</td><td>' + rn.whtr + '</td><td><b>' + ra.whtr + '</b></td><td>' + (ra.whtrHigh ? '<span style="color:var(--warn)">≥ 0.5</span>' : '<span style="color:var(--ok)">أقل من 0.5 ✓</span>') + '</td></tr>' +
+      '<tr><td>الخصر ÷ الورك</td><td>' + rn.whr + '</td><td><b>' + ra.whr + '</b></td><td></td></tr>' +
+      '<tr><td>مؤشر كتلة الجسم</td><td>' + rn.bmi + '</td><td><b>' + ra.bmi + '</b></td><td></td></tr></tbody></table>';
+  }
+  function vBody(d) {
+    const b = body(d), m = b.m, u = BD.UNITS[b.unit], pr = bodyProjection();
+    const inp = f => '<label>' + f.ar + ' (' + f.unit + ')<input id="bd-' + f.k + '" type="number" step="0.5" value="' + m[f.k] + '" style="width:88px"></label>';
+    const label = b.n === 0 ? 'الآن' : 'بعد ' + b.n + ' ' + u.ar;
+    return '<div class="card" id="bodytwin"><h3>توأم الجسم ثلاثي الأبعاد</h3>' + fl('body') +
+      '<p class="small mut">أدخلي قياساتك بشريط القياس، فيُبنى مجسّم يشبه نسب جسمك. حرّكي شريط الزمن لترَي كيف قد تتغير هيئتك وقياساتك لو التزمتِ بالخطة الغذائية والرياضية الحالية في الأسفل (عجز ' + env.S.twin.deficit + ' سعر/يوم، نشاط ' + env.S.twin.act + ' دقيقة/أسبوع، التزام ' + env.S.twin.adh + '%).</p>' +
+      (m.estimated ? '<div class="alert info">القياسات الحالية تقديرية من طولك ووزنك. أدخلي قياساتك الحقيقية ليصبح المجسّم أدق.</div>' : '') +
+      '<div class="row">' + BD.FIELDS.map(inp).join('') + '<button class="btn" data-act="saveBody">بناء المجسّم</button></div>' +
+      '<div class="body3d" style="margin-top:12px"><div><canvas id="holo" class="holo" width="420" height="560" aria-label="مجسّم ثلاثي الأبعاد للجسم: الحالي والمتوقع"></canvas>' +
+      '<div class="legend3d"><span><i style="background:#ff9ccb"></i>الآن</span><span><i style="background:#2dd4c8"></i>' + esc(label) + '</span><span class="mut">اسحبي للتدوير</span></div></div>' +
+      '<div><div class="row"><label>الوحدة<select id="bd-unit">' + Object.keys(BD.UNITS).map(k => '<option value="' + k + '"' + (b.unit === k ? ' selected' : '') + '>' + BD.UNITS[k].ar + '</option>').join('') + '</select></label>' +
+      '<label style="flex:1;min-width:200px">شريط الزمن: <output id="bd-nl">' + esc(label) + '</output><input id="bd-n" type="range" min="0" max="' + u.max + '" step="1" value="' + Math.min(b.n, u.max) + '"></label></div>' +
+      '<div class="scroll" id="bd-table">' + bodyTable(pr) + '</div>' +
+      (pr.capped ? '<p class="small" style="color:var(--warn)">الإسقاط محدود بسنة واحدة.</p>' : '') +
+      '<p class="small mut">تقدير تعليمي من مسار الوزن في التوأم الرقمي، مع افتراض تقريبي لتوزيع النقص (الخصر ~1 سم لكل 1 كغ). الأجسام تختلف، والنتيجة نطاق محتمل لا وعد. نسبة الخصر إلى الطول أقل من 0.5 مؤشر عام لخطر أيضي أقل.</p></div></div>' +
+      '<div class="card" style="margin-top:12px;background:var(--card-s)"><h3>مسح الجسم بالكاميرا (اختياري)</h3>' +
+      '<p class="small">يحسّن شكل المجسّم من صورة أمامية لكامل الجسم. <b>خصوصيتك محفوظة:</b> تُعالَج الصورة داخل جهازك فقط وتتحول فوراً إلى ظلّ بخطوط تشبه الأشعة، <b>لا تُعرض ولا تُحفظ ولا تُرسل</b>. يُحفظ فقط ثلاث نسب (الكتفان/الخصر/الورك).</p>' +
+      '<p class="small mut">للحصول على نتيجة أدق: قفي أمام جدار بلون واحد، بملابس ضيقة نسبياً، والذراعان بعيدتان قليلاً عن الجسم، والجسم كاملاً في الصورة.</p>' +
+      '<div class="row"><label class="btn sec sm" style="cursor:pointer">التقاط أو اختيار صورة<input id="bd-scan" type="file" accept="image/*" capture="environment" hidden></label>' + (b.shape ? '<button class="btn sec sm" data-act="clearShape">إلغاء نسب المسح</button>' : '') + '</div>' +
+      '<canvas id="xray" class="xray" hidden></canvas>' + fl('scan') +
+      (b.shape ? '<p class="small">النسب المطبّقة على المجسّم: الكتفان ' + b.shape.shoulder + ' · الخصر ' + b.shape.waist + ' · الورك ' + b.shape.hip + '</p>' : '') + '</div></div>';
+  }
+  let holo = null;
+  function startHolo() {
+    if (holo) { cancelAnimationFrame(holo.raf); holo = null; }
+    const cv = document.getElementById('holo'); if (!cv) return;
+    const S = env.S, b = S.body; if (!b) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1); cv.width = 420 * dpr; cv.height = 560 * dpr;
+    const st = { cv, angle: 0.5, drag: null, auto: true, raf: 0 };
+    const build = () => { const pr = bodyProjection(); st.models = [{ rings: BD.rings(pr.at, b.shape), color: '#2dd4c8', glow: 10, width: 1.3 * dpr }, { rings: BD.rings(pr.now, b.shape), color: '#ff9ccb', alpha: b.n ? 0.35 : 0, glow: 0, width: 1 * dpr }]; };
+    build(); st.build = build;
+    const frame = () => { if (!document.body.contains(cv)) { holo = null; return; } if (st.auto && !st.drag) st.angle += 0.006; BD.draw(cv, st.models, st.angle); st.raf = requestAnimationFrame(frame); };
+    cv.addEventListener('pointerdown', e => { st.drag = { x: e.clientX, a: st.angle }; st.auto = false; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointermove', e => { if (st.drag) st.angle = st.drag.a + (e.clientX - st.drag.x) * 0.012; });
+    cv.addEventListener('pointerup', () => { st.drag = null; });
+    holo = st; frame();
+  }
+  function updateBodyLive() {
+    const b = env.S.body, u = BD.UNITS[b.unit], pr = bodyProjection();
+    const lbl = b.n === 0 ? 'الآن' : 'بعد ' + b.n + ' ' + u.ar;
+    const o = document.getElementById('bd-nl'); if (o) o.textContent = lbl;
+    const tb = document.getElementById('bd-table'); if (tb) tb.innerHTML = bodyTable(pr);
+    const lg = document.querySelector('.legend3d span:nth-child(2)'); if (lg) lg.innerHTML = '<i style="background:#2dd4c8"></i>' + esc(lbl);
+    if (holo) holo.build();
+  }
+  async function scanBody(file) {
+    const S = env.S, b = S.body;
+    if (!file || !/^image\//.test(file.type)) { setFlash('scan', 'اختاري صورة.', 'warn'); render(); return; }
+    let bmp = null, url = null;
+    try {
+      // نحمّل الصورة في الذاكرة فقط ونصغّرها، ثم نتخلص منها فوراً
+      if (window.createImageBitmap) bmp = await createImageBitmap(file);
+      else { url = URL.createObjectURL(file); bmp = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = url; }); }
+      const h = 220, w = Math.max(60, Math.round(h * bmp.width / bmp.height));
+      const c = document.createElement('canvas'); c.width = w; c.height = h; const cx = c.getContext('2d', { willReadFrequently: true });
+      cx.drawImage(bmp, 0, 0, w, h); const data = cx.getImageData(0, 0, w, h).data;
+      cx.clearRect(0, 0, w, h); c.width = c.height = 0;
+      const sil = BD.silhouette(data, w, h); data.fill(0);
+      const xr = document.getElementById('xray'); if (xr) { BD.drawXray(xr, sil, w, h); xr.hidden = false; }
+      if (sil.ok && sil.shape) { b.shape = sil.shape; b.scanAt = S.clock.now; save(); setFlash('scan', 'تم المسح: طُبّقت نسب جسمك على المجسّم، ولم تُحفظ الصورة.', 'ok'); }
+      else setFlash('scan', 'تعذّر عزل الجسم بوضوح. جرّبي خلفية بلون واحد وأن يظهر الجسم كاملاً. لم تُحفظ الصورة.', 'warn');
+    } catch (e) { setFlash('scan', 'تعذّرت قراءة الصورة على هذا المتصفح.', 'warn'); }
+    finally { if (bmp && bmp.close) bmp.close(); if (url) URL.revokeObjectURL(url); const fi = document.getElementById('bd-scan'); if (fi) fi.value = ''; }
+    const keep = document.getElementById('xray'); const snap = keep && !keep.hidden ? keep : null;
+    render();
+    if (snap) { const nx = document.getElementById('xray'); if (nx) { nx.replaceWith(snap); } }
   }
 
   function vChat() {
@@ -1758,6 +2195,7 @@ textarea{font:inherit;color:inherit;background:var(--inp);border:1px solid var(-
     renderNav(); renderClock();
     $('#view').innerHTML = env.S.onboarded ? VIEWS[tab]() : vWelcome();
     const m = $('#msgs'); if (m) m.scrollTop = m.scrollHeight;
+    if (tab === 'twin' && env.S.onboarded) startHolo();
   }
   const busyEditing = () => { const a = document.activeElement; return a && /INPUT|SELECT|TEXTAREA/.test(a.tagName) && a.id !== 'scale'; };
 
@@ -1810,6 +2248,17 @@ textarea{font:inherit;color:inherit;background:var(--inp);border:1px solid var(-
       }
       case 'saveProfile': { const p = S.patient; p.heightCm = num('p-h') || p.heightCm; p.age = num('p-a') || p.age; p.activity = val('p-act'); p.goal = val('p-goal'); setFlash('food', 'تم تحديث الملف والخطة.', 'ok'); break; }
       case 'shuffleDiet': dietSeed++; break;
+      case 'pantryToggle': { const pt = pantry(), id = d.v; pt.have = pt.have.includes(id) ? pt.have.filter(x => x !== id) : pt.have.concat(id); if (pt.res) pt.res = Date.now(); break; }
+      case 'pantryAdd': { const pt = pantry(), r = KT.parse(val('pt-txt')); pt.have = [...new Set(pt.have.concat(r.ids))]; pt.unknown = r.unknown; if (pt.res) pt.res = Date.now(); break; }
+      case 'pantryClear': { const pt = pantry(); pt.have = []; pt.res = null; pt.unknown = []; break; }
+      case 'suggestMeal': { const pt = pantry(); const r = KT.parse(val('pt-txt')); pt.have = [...new Set(pt.have.concat(r.ids))]; pt.unknown = r.unknown; pt.slot = val('pt-slot') || 'any'; if (!pt.have.length) { setFlash('kit', 'اختاري أو اكتبي مكوّنات أولاً.', 'warn'); pt.res = null; break; } pt.res = Date.now(); break; }
+      case 'logRecipe': { const c = Number(d.c); E.addMeal(env, d.n, c); setFlash('kit', 'سُجّلت «' + esc(d.n) + '» (' + c + ' جم كربوهيدرات) وستظهر في نموذج الجلوكوز.', 'ok'); break; }
+      case 'saveBody': {
+        const b = body(E.derive(env)), m = {}; BD.FIELDS.forEach(f => m[f.k] = num('bd-' + f.k));
+        const bad = BD.validate(m); if (bad.length) { setFlash('body', 'تحققي من: ' + bad.join('، '), 'warn'); break; }
+        b.m = m; setFlash('body', 'تم بناء المجسّم من قياساتك.', 'ok'); break;
+      }
+      case 'clearShape': { if (S.body) S.body.shape = null; setFlash('scan', 'أُلغيت نسب المسح.', 'info'); break; }
       case 'addMeal': { const c = num('ml-c'); if (!(c >= 0 && c <= 300)) { setFlash('food', 'كربوهيدرات غير معقولة (0–300).', 'warn'); break; } E.addMeal(env, val('ml-n') || 'وجبة', c); setFlash('food', 'سُجّلت الوجبة. شغّلي المحاكاة أو اقفزي ساعة لترين الأثر.', 'ok'); break; }
       case 'checkSupp': {
         S.patient.meds = val('sp-m'); S.patient.pregnant = chk('sp-p'); S.patient.hypertension = chk('sp-h');
@@ -1921,6 +2370,9 @@ textarea{font:inherit;color:inherit;background:var(--inp);border:1px solid var(-
     const t = e.target;
     if (t.id === 'scale') { env.S.clock.scale = Number(t.value); save(); return; }
     if (t.dataset && t.dataset.act === 'fault') { act('fault', t); return; }
+    if (t.id === 'bd-scan') { scanBody(t.files && t.files[0]); return; }
+    if (t.id === 'pt-slot') { const pt = pantry(); pt.slot = t.value; save(); if (pt.res) render(); return; }
+    if (t.id === 'bd-unit') { const b = env.S.body; b.unit = t.value; b.n = Math.min(b.n, BD.UNITS[b.unit].max); save(); render(); return; }
     if (t.dataset && t.dataset.twin) {
       const tw = env.S.twin;
       tw.deficit = num('t-def'); tw.act = num('t-act'); tw.adh = num('t-adh'); tw.horizon = num('t-hor'); tw.fgAssumption = num('t-ass') || 0;
@@ -1930,6 +2382,7 @@ textarea{font:inherit;color:inherit;background:var(--inp);border:1px solid var(-
   document.addEventListener('input', e => {
     const t = e.target;
     if (t.dataset && t.dataset.out) { const o = document.getElementById(t.dataset.out); if (o) o.textContent = t.value; }
+    if (t.id === 'bd-n') { env.S.body.n = Number(t.value); updateBodyLive(); save(); }
   });
   document.addEventListener('submit', e => {
     if (e.target.id === 'chatform') { e.preventDefault(); const i = $('#chat-in'); const q = i.value; i.value = ''; ask(q); }

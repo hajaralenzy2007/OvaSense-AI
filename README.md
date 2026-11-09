@@ -6,12 +6,12 @@ Interactive prototype of **OvaSense AI**: a wearable concept for managing PMOS (
 
 ## What it shows
 - Patient dashboard: interstitial glucose, time in range, next dose, "do I need a blood test?"
-- Measurements, personalised diet, symptoms and bleeding (PBAC) analysis
+- Measurements, personalised diet, **meal ideas from the ingredients you have** (matched to your daily plan), symptoms and bleeding (PBAC) analysis
 - Cycle and fertility estimates (calendar method with uncertainty; not contraception)
-- Digital twin ("what if?"), rule-based local assistant
+- Digital twin ("what if?") with a **3D body twin** built from your measurements, a **timeline** (days/weeks/months) of projected shape and measurements, and a **privacy-preserving body scan** (X-ray-style outline processed on-device; the photo is never shown or stored); rule-based local assistant
 - Doctor panel with ECDSA-signed plans/commands, device simulator with fault injection, security lab (11 attacks rejected)
 
 ## Important
 - All data is **synthetic**; this is an educational simulation, not a medical device.
 - The assistant is rule-based (no LLM, no network calls).
-- Full source (modular JS, 45 unit tests, 19 browser tests): `OvaSense-MVP-source.zip`.
+- Full source (modular JS, 52 unit tests, 22 browser tests): `OvaSense-MVP-source.zip`.
