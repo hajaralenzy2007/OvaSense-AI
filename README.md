@@ -1,6 +1,6 @@
-# OvaSense AI — MVP (MED-PCKPZB)
+# OvaSense AI — MVP
 
-Interactive prototype of **OvaSense AI**: a wearable concept for managing PMOS (formerly PCOS) *after* a doctor's diagnosis (it does not diagnose). Team code MED-PCKPZB, Medathon 2026, track 3.
+Interactive prototype of **OvaSense AI**: a wearable concept for managing PMOS (formerly PCOS) *after* a doctor's diagnosis (it does not diagnose).
 
 **Live demo:** open the GitHub Pages link of this repository (`index.html`, a single self-contained file that also works offline by double-clicking).
 
